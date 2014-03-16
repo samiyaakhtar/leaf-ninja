@@ -4,6 +4,7 @@
  * Jeff Avery
  */
 package com.example.a4;
+import java.util.Random;
 import android.graphics.*;
 import android.util.Log;
 
@@ -14,6 +15,20 @@ public class Fruit {
     private Path path = new Path();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Matrix transform = new Matrix();
+    private PointF current;
+    
+    private double          outlineWidth = 5;
+    private int flyX = 0;
+    
+	Random rand = new Random(System.currentTimeMillis());
+
+    private int direction;
+    private int maximum_height;
+    private boolean isActive;
+    private boolean sliced;
+    private Path splitLine;
+    
+
 
     /**
      * A fruit is represented as Path, typically populated 
@@ -42,6 +57,12 @@ public class Fruit {
     private void init() {
         this.paint.setColor(Color.BLUE);
         this.paint.setStrokeWidth(5);
+        this.current = new PointF(10, 500);
+        this.direction = 1;
+        this.maximum_height = getRandomNumber(100, 80);
+        this.isActive = true;
+        this.sliced = false;
+        this.splitLine = null;
     }
 
     /**
@@ -78,6 +99,10 @@ public class Fruit {
         return transformedPath;
     }
 
+    public int getRandomNumber(int maximum, int minimum) {
+	  	int randomNum = minimum + (int)(Math.random()*(maximum - minimum));
+	      return randomNum;
+	  }
     /**
      * Paints the Fruit to the screen using its current affine
      * transform and paint settings (fill, outline)
@@ -86,8 +111,15 @@ public class Fruit {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
         // TODO END CS349
+    	Log.d("", "draw");
+    	//current.x++;
+    	//current.y--;
+    	translate(1, -1);
     	
-    	canvas.drawCircle(10, 10, 10, paint);
+    	//transform.postTranslate(1, 1);
+    	
+    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	
     }
 
     /**

@@ -5,6 +5,7 @@
  */
 package com.example.a4;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.*;
 import android.util.Log;
@@ -24,28 +25,16 @@ import java.util.Timer;
 public class MainView extends View implements Observer {
     private final Model model;
     private final MouseDrag drag = new MouseDrag();
+    private Activity main_activity;
 
     public Timer gameTimer = new Timer("gameTimer");
     public Timer fruitTimer = new Timer("fruitTimer") ;
     
-    void startTimers() {
-    	gameTimer.schedule(new TimerTask() { 
-    		@Override
-    		public void run() {
-    			Log.d("MainActivity", "hello");
-    			
-    		}
-    	}, 50);
-    	
-    }
     
-    void stopTimers() {
-    	
-    	
-    }
     // Constructor
     MainView(Context context, Model m) {
         super(context);
+        main_activity = (Activity) context;
 
         // register this view with the model
         model = m;
@@ -60,6 +49,8 @@ public class MainView extends View implements Observer {
         Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f2.translate(200, 200);
         model.add(f2);
+        
+        startTimers();
         // TODO END CS349
 
         // add controller
@@ -113,7 +104,47 @@ public class MainView extends View implements Observer {
         });
     }
     
+    void startTimers() {
+    	gameTimer.schedule(new TimerTask() { 
+    		public void run() {
+    			Log.d("MainActivity", "hello from gameTimer");
+    			drawGame();
+    			//invalidate();
+    		}
+    	}, 0, 50);
+    	
+/*
+    	fruitTimer.schedule(new TimerTask() { 
+    		@Override
+    		public void run() {
+    			//Log.d("MainActivity", "hello from fruitTimer");
+    			 Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+		       
+		        model.add(f1);
+    		}
+    	}, 0, 800); */
+    	
+    }
+    
+    void stopTimers() {
+    	    	
+    	gameTimer.cancel();
+    	fruitTimer.cancel();
+    }
+    
+    void drawGame() {
+    	
+    	Log.d("", "drawGame");
+    	main_activity.runOnUiThread(new Runnable() {
 
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				//this.update(model, this);
+				Log.d("MainView", "invalidating");
+				invalidate();
+			}});
+    }
     // inner class to track mouse drag
     // a better solution *might* be to dynamically track touch movement
     // in the controller above
@@ -140,8 +171,8 @@ public class MainView extends View implements Observer {
         super.onDraw(canvas);
 
         // draw background
-        setBackgroundColor(Color.WHITE);
-
+        //setBackgroundColor(Color.WHITE);
+        
         // draw all pieces of fruit
         for (Fruit s : model.getShapes()) {
             s.draw(canvas);
@@ -150,6 +181,7 @@ public class MainView extends View implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
+    	
         invalidate();
     }
 }

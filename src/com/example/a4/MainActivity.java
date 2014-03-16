@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
         ViewGroup v1 = (ViewGroup) findViewById(R.id.main_1);
         v1.addView(titleView);
 
-        mainView = new MainView(this.getApplicationContext(), model);
+        mainView = new MainView(this, model);
         ViewGroup v2 = (ViewGroup) findViewById(R.id.main_2);
         v2.addView(mainView);
 
