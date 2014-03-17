@@ -41,14 +41,15 @@ public class MainView extends View implements Observer {
         model.addObserver(this);
 
         // TODO BEGIN CS349
-        // test fruit, take this out before handing in!
+        // test fruit, take this out before handing in! 
+        /*
         Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f1.translate(100, 100);
         model.add(f1);
 
         Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f2.translate(200, 200);
-        model.add(f2);
+        model.add(f2); */
         
         startTimers();
         // TODO END CS349
@@ -108,21 +109,31 @@ public class MainView extends View implements Observer {
     	gameTimer.schedule(new TimerTask() { 
     		public void run() {
     			Log.d("MainActivity", "hello from gameTimer");
-    			drawGame();
-    			//invalidate();
+    			
+    			main_activity.runOnUiThread(new Runnable() {
+    				@Override
+    				public void run() {
+    					drawGame();
+    				}});
     		}
     	}, 0, 50);
     	
-/*
+
     	fruitTimer.schedule(new TimerTask() { 
     		@Override
     		public void run() {
-    			//Log.d("MainActivity", "hello from fruitTimer");
-    			 Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-		       
-		        model.add(f1);
+    			//addFruits();
+    			main_activity.runOnUiThread(new Runnable() {
+    				@Override
+    				public void run() {
+    	   			 Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+    			       f1.translate(0, 500);
+    			       f1.current.x = 0;
+    			       f1.current.y = 500;
+    			        model.add(f1);
+    				}});
     		}
-    	}, 0, 800); */
+    	}, 0, 800); 
     	
     }
     
@@ -131,19 +142,13 @@ public class MainView extends View implements Observer {
     	gameTimer.cancel();
     	fruitTimer.cancel();
     }
-    
-    void drawGame() {
+    void addFruits() {
     	
-    	Log.d("", "drawGame");
-    	main_activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				//this.update(model, this);
-				Log.d("MainView", "invalidating");
-				invalidate();
-			}});
+    	
+    }
+    void drawGame() {
+    	update(this.model, this);
+    	
     }
     // inner class to track mouse drag
     // a better solution *might* be to dynamically track touch movement
@@ -170,12 +175,21 @@ public class MainView extends View implements Observer {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // draw background
-        //setBackgroundColor(Color.WHITE);
-        
-        // draw all pieces of fruit
-        for (Fruit s : model.getShapes()) {
-            s.draw(canvas);
+        Iterator<Fruit> iter = model.getActualShapes().iterator();
+    	
+    	while(iter.hasNext() ) {
+        	Fruit current = iter.next();
+        	if(!current.isSliced() && !current.isActive()){
+        		
+        		model.incrementDropped();
+        		iter.remove();
+        	}
+        	else if(current.isSliced() && !current.isActive()) {
+        		iter.remove();
+        	}
+        	else if(current.isActive()) {
+        		current.draw(canvas);
+        	}
         }
     }
 

@@ -15,9 +15,8 @@ public class Fruit {
     private Path path = new Path();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Matrix transform = new Matrix();
-    private PointF current;
+    public PointF current;
     
-    private double          outlineWidth = 5;
     private int flyX = 0;
     
 	Random rand = new Random(System.currentTimeMillis());
@@ -27,6 +26,7 @@ public class Fruit {
     private boolean isActive;
     private boolean sliced;
     private Path splitLine;
+    private Path flyPath;
     
 
 
@@ -63,6 +63,8 @@ public class Fruit {
         this.isActive = true;
         this.sliced = false;
         this.splitLine = null;
+        this.flyPath = new Path();
+        
     }
 
     /**
@@ -111,10 +113,24 @@ public class Fruit {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
         // TODO END CS349
-    	Log.d("", "draw");
-    	//current.x++;
-    	//current.y--;
-    	translate(1, -1);
+    	
+    	if(direction == 1) {
+    		
+    		current.x++;
+        	current.y--;
+        	translate(1, -1);
+    	}
+    	else {
+    		current.x++;
+    		current.y++;
+        	translate(1, 1);
+    	}
+    	if(current.y < maximum_height) {
+    		direction = -1;
+    	}
+    	if(direction == -1 && current.y > 500) {
+    		isActive = false;
+    	}
     	
     	//transform.postTranslate(1, 1);
     	
@@ -163,5 +179,13 @@ public class Fruit {
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
         }
         return new Fruit[0];
+    }
+    
+    public boolean isSliced() {
+    	
+    	return sliced;
+    }
+    public boolean isActive() {
+    	return isActive;
     }
 }
