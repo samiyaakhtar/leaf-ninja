@@ -94,7 +94,7 @@ public class MainView extends View implements Observer {
                                     Log.e("fruit_ninja", "Error: " + ex.getMessage());
                                 }
                             } else {
-                                s.setFillColor(Color.BLUE);
+                                //s.setFillColor(Color.BLUE);
                             }
                             invalidate();
                         }
@@ -108,15 +108,13 @@ public class MainView extends View implements Observer {
     void startTimers() {
     	gameTimer.schedule(new TimerTask() { 
     		public void run() {
-    			Log.d("MainActivity", "hello from gameTimer");
-    			
     			main_activity.runOnUiThread(new Runnable() {
     				@Override
     				public void run() {
     					drawGame();
     				}});
     		}
-    	}, 0, 50);
+    	}, 0, 25);
     	
 
     	fruitTimer.schedule(new TimerTask() { 
@@ -126,14 +124,15 @@ public class MainView extends View implements Observer {
     			main_activity.runOnUiThread(new Runnable() {
     				@Override
     				public void run() {
-    	   			 Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-    			       f1.translate(0, 500);
-    			       f1.current.x = 0;
-    			       f1.current.y = 500;
+    	   			   //Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+    	   			   Fruit f1 = new Fruit(new RectF(0, 0, 100, 100));
+    			       //f1.translate(0, 500);
+    			       //f1.current.x = 0;
+    			       //f1.current.y = 500;
     			        model.add(f1);
     				}});
     		}
-    	}, 0, 800); 
+    	}, 0, 1000); 
     	
     }
     
@@ -141,10 +140,6 @@ public class MainView extends View implements Observer {
     	    	
     	gameTimer.cancel();
     	fruitTimer.cancel();
-    }
-    void addFruits() {
-    	
-    	
     }
     void drawGame() {
     	update(this.model, this);
