@@ -33,7 +33,8 @@ public class Fruit {
     private Path splitLine;
     private Path flyPath;
     
-
+    private float x_location; //Used for now
+    private float x_start;
 
     /**
      * A fruit is represented as Path, typically populated 
@@ -71,7 +72,7 @@ public class Fruit {
         this.current = new PointF(getRandomNumber(120, 100), 500);
         this.direction = 1;
         this.max_y = getRandomNumber(120, 80);
-        this.max_x = getRandomNumber(80, 50);
+        this.max_x = getRandomNumber(300, 200);
         this.isActive = true;
         this.sliced = false;
         this.splitLine = null;
@@ -81,6 +82,8 @@ public class Fruit {
         this.multiplier_y = getRandomFloat((float)0.09, (float)0.05);
         
         this.translate(current.x, current.y);
+        this.x_location = current.x;
+        this.x_start = current.x;
         
         Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
     }
@@ -135,6 +138,8 @@ public class Fruit {
     	performGravity();
     	if(current.y < max_y) {
     		direction = -1;
+    		//x_location = max_x;
+    		max_x = 2*max_x - (int)x_start;
     	}
     	if(direction == -1 && current.y > 900) {
     		isActive = false;
@@ -144,25 +149,20 @@ public class Fruit {
     }
     
     void performGravity() {
-    	if(current.x > max_x) {
-    		
-    	}
-    	if(current.y > max_y) {
-    		
-    	}
-
     	if(direction == 1) {
-    		
-    		current.x = current.x + (current.x)*multiplier_x;
+    		current.x = current.x + (max_x - x_location)*multiplier_x;
         	current.y = current.y - current.y*multiplier_y;
-        	translate((current.x)*multiplier_x, - current.y*multiplier_y);
+        	x_location += (max_x - x_location)*multiplier_x;
+        	translate((max_x - x_location)*multiplier_x, - current.y*multiplier_y);
     	}
     	else {
-    		current.x = current.x + (current.x)*multiplier_x;
+    		current.x = current.x + (max_x - x_location)*multiplier_x;
         	current.y = current.y + current.y*multiplier_y;
-        	translate((current.x)*multiplier_x, current.y*multiplier_y);
+        	x_location += (max_x - x_location)*multiplier_x;
+        	translate((max_x - x_location)*multiplier_x, current.y*multiplier_y);
     	}
-    	Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y);
+    	
+    	Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y + "x_location = " + x_location);
     }
 
     /**
