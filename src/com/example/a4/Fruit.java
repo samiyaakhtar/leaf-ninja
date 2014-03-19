@@ -69,17 +69,17 @@ public class Fruit {
     private void init() {
         this.paint.setColor(getRandomColor());
         this.paint.setStrokeWidth(5);
-        this.current = new PointF(getRandomNumber(120, 100), 500);
+        this.current = new PointF(getRandomNumber(120, 20), 500);
         this.direction = 1;
-        this.max_y = getRandomNumber(120, 80);
-        this.max_x = getRandomNumber(300, 200);
+        this.max_y = getRandomNumber(120, 60);
+        this.max_x = getRandomNumber(200, 100);
         this.isActive = true;
         this.sliced = false;
         this.splitLine = null;
         this.flyPath = new Path();
         
-        this.multiplier_x = getRandomFloat((float)0.05, (float)0.02);
-        this.multiplier_y = getRandomFloat((float)0.09, (float)0.05);
+        this.multiplier_x = getRandomFloat((float)0.07, (float)0.02);
+        this.multiplier_y = getRandomFloat((float)0.07, (float)0.05);
         
         this.translate(current.x, current.y);
         this.x_location = current.x;
@@ -135,16 +135,25 @@ public class Fruit {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
         // TODO END CS349
-    	performGravity();
+/*
     	if(current.y < max_y) {
     		direction = -1;
     		//x_location = max_x;
-    		max_x = 2*max_x - (int)x_start;
+    		max_x = 2*(max_x - (int)x_start);
+    	} */
+    	if(current.y < max_y && (Math.abs(x_location - max_x) < 19)) {
+    	//if(current.y < max_y) {
+    		this.paint.setColor(Color.BLACK);
+    		direction = -1;
+    		x_location = Math.abs(x_location - max_x) + max_x;
+    		//x_location = max_x;
+    		//max_x = 2*(max_x - (int)x_start);
     	}
+    	performGravity();
     	if(direction == -1 && current.y > 900) {
     		isActive = false;
     	}
-    	canvas.drawCircle(current.x, current.y, 2, paint);
+    	//canvas.drawCircle(current.x, current.y, 2, paint);
     	canvas.drawPath(this.getTransformedPath(), this.paint);
     }
     
@@ -152,14 +161,22 @@ public class Fruit {
     	if(direction == 1) {
     		current.x = current.x + (max_x - x_location)*multiplier_x;
         	current.y = current.y - current.y*multiplier_y;
-        	x_location += (max_x - x_location)*multiplier_x;
         	translate((max_x - x_location)*multiplier_x, - current.y*multiplier_y);
+        	x_location += (max_x - x_location)*multiplier_x;
     	}
     	else {
-    		current.x = current.x + (max_x - x_location)*multiplier_x;
+    		float adder = Math.abs((x_location - max_x )*multiplier_x);
+    		current.x = current.x + adder;
         	current.y = current.y + current.y*multiplier_y;
-        	x_location += (max_x - x_location)*multiplier_x;
-        	translate((max_x - x_location)*multiplier_x, current.y*multiplier_y);
+        	translate(adder, current.y*multiplier_y);
+        	x_location += adder;
+        	
+    		/*
+        	current.x = current.x + (x_location - max_x)*multiplier_x;
+        	current.y = current.y + current.y*multiplier_y;
+        	translate((x_location - max_x)*multiplier_x, current.y*multiplier_y);
+        	x_location += (x_location - max_x)*multiplier_x;
+        	*/
     	}
     	
     	Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y + "x_location = " + x_location);
@@ -169,38 +186,38 @@ public class Fruit {
      * Tests whether the line represented by the two points intersects
      * this Fruit.
      */
-    /*
+    
     public boolean intersects(PointF p1, PointF p2) {
         // TODO BEGIN CS349
         // calculate angle between points
         // rotate and flatten points passed in 
         // rotate path and create region for comparison
         // TODO END CS349
+    	// calculate angle between points
+    	// rotate the points so that they're horizontal
+    	// rotate the region by the same angle
+    	double angle = Angle(p1, p2);
+    	
+    	
         return false;
-    } */
+    } 
     /*
-    public boolean intersection(PointF p1, PointF p2) {
+     * Calculates and returns the angle between the x axis and the line formed by 
+     * two points passed as parameter to this function
+     */
+    private double Angle(PointF p1, PointF p2)
+    {
+        double dx = p2.x - p1.x;
+        double dy = p2.y - p1.y;
+        double angle = Math.atan2(dy, dx); 
         
-    	// create a line
-    	Path line = new Path(); 
-    	line.lineTo(p1.x, p1.y);
-    	line.lineTo(p2.x, p2.y);
-    	
-    	// if start/end point falls within the fruit then it doesn't intersect 
-    	if (this.contains(p1) || this.contains(p2)) {
-			return false;
-		}
-    	
-    	if(line.op(getTransformedPath(), Path.Op.INTERSECT)) {
-    		return true;
-    	}
-    	return false;
-    } */
+        return angle;
+    }
     /**
      * Tests whether the line represented by the two points intersects
      * this Fruit. 
      */
-    public boolean intersects(PointF p1, PointF p2) {
+    public boolean intersection(PointF p1, PointF p2) {
     	 // TODO BEGIN CS349
         // TODO END CS349
     	int pointx1 = (int)current.x;
