@@ -135,15 +135,15 @@ public class Fruit {
         // TODO BEGIN CS349
         // tell the shape to draw itself using the matrix and paint parameters
         // TODO END CS349
-/*
+    	/*
     	if(current.y < max_y) {
     		direction = -1;
     		//x_location = max_x;
     		max_x = 2*(max_x - (int)x_start);
     	} */
-    	if(current.y < max_y && (Math.abs(x_location - max_x) < 19)) {
+    	if(!isSliced() && current.y < max_y && (Math.abs(x_location - max_x) < 19)) {
     	//if(current.y < max_y) {
-    		this.paint.setColor(Color.BLACK);
+    		//this.paint.setColor(Color.BLACK);
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
     		//x_location = max_x;
@@ -186,7 +186,7 @@ public class Fruit {
      * Tests whether the line represented by the two points intersects
      * this Fruit.
      */
-    
+    /*
     public boolean intersects(PointF p1, PointF p2) {
         // TODO BEGIN CS349
         // calculate angle between points
@@ -201,6 +201,7 @@ public class Fruit {
     	
         return false;
     } 
+    */
     /*
      * Calculates and returns the angle between the x axis and the line formed by 
      * two points passed as parameter to this function
@@ -217,7 +218,7 @@ public class Fruit {
      * Tests whether the line represented by the two points intersects
      * this Fruit. 
      */
-    public boolean intersection(PointF p1, PointF p2) {
+    public boolean intersects(PointF p1, PointF p2) {
     	 // TODO BEGIN CS349
         // TODO END CS349
     	int pointx1 = (int)current.x;
@@ -327,9 +328,38 @@ public class Fruit {
         // rotate region
         // define region masks and use to split region into top and bottom
         // TODO END CS349
+    	/*
         if (topPath != null && bottomPath != null) {
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        }
+        }*/
+    	if(sliced) {
+    		this.isActive = false;
+    		
+    		Fruit[] fruits = new Fruit[] {new Fruit(new RectF(0, 0, 50, 50)), new Fruit(new RectF(10, 10, 50, 50))};
+    		
+    		fruits[0].sliced = true;
+    		fruits[0].current = this.current;
+    		fruits[0].direction = -1;
+    		fruits[0].multiplier_y = (float)0.01;
+    		fruits[0].multiplier_x = 0;
+    		fruits[0].transform = this.transform;
+    		fruits[0].x_location = this.x_location;
+    		fruits[0].x_start = this.x_start;
+    		fruits[0].paint = this.paint;
+    		
+    		fruits[1].sliced = true;
+    		fruits[1].current = this.current;
+    		fruits[1].current.x = this.current.x + 50;
+    		fruits[1].direction = -1;
+    		fruits[1].multiplier_y = (float)0.01;
+    		fruits[1].multiplier_x = 0;
+    		fruits[1].transform = transform;
+    		fruits[1].x_location = this.x_location;
+    		fruits[1].x_start = this.x_start;
+    		fruits[1].paint = this.paint;
+    		
+    		return fruits ;
+    	}
         return new Fruit[0];
     }
     

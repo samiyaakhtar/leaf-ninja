@@ -73,25 +73,30 @@ public class MainView extends View implements Observer {
                         Iterator<Fruit> i = model.getShapes().iterator();
                         while(i.hasNext()) {
                             Fruit s = i.next();
-                            if (s.intersects(drag.getStart(), drag.getEnd())) {
+                            if (s.isActive() && !s.isSliced() && s.intersects(drag.getStart(), drag.getEnd())) {
                             	s.setFillColor(Color.RED);
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
 
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
-                                    newFruits[0].translate(0, -10);
-                                    newFruits[1].translate(0, +10);
-                                    // TODO END CS349
-                                    model.add(newFruits[0]);
-                                    model.add(newFruits[1]);
-
+                                    if(newFruits != null && newFruits.length == 2) {
+	                                    newFruits[0].translate(0, -10);
+	                                    newFruits[1].translate(0, +10);
+	                                    // TODO END CS349
+	                                    model.add(newFruits[0]);
+	                                    model.add(newFruits[1]);
+	                                    
+	                                    newFruits[0].setFillColor(Color.YELLOW);
+	                                    newFruits[1].setFillColor(Color.YELLOW);
+                                    }
                                     // TODO BEGIN CS349
                                     // delete original fruit from model
                                     // TODO END CS349
 
                                 } catch (Exception ex) {
                                     Log.e("fruit_ninja", "Error: " + ex.getMessage());
+                                    s.setFillColor(Color.GRAY);
                                 }
                             } else {
                                 //s.setFillColor(Color.BLUE);
