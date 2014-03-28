@@ -28,9 +28,10 @@ public class Fruit {
     private int max_x;
     private float multiplier_x;
     private float multiplier_y;
-    private boolean isActive;
-    private boolean sliced;
-    private Path splitLine;
+    public boolean isActive;
+    public boolean sliced;
+    private PointF splitPoint1;
+    private PointF splitPoint2;
     private Path flyPath;
     
     private float x_location; //Used for now
@@ -75,7 +76,6 @@ public class Fruit {
         this.max_x = getRandomNumber(200, 100);
         this.isActive = true;
         this.sliced = false;
-        this.splitLine = null;
         this.flyPath = new Path();
         
         this.multiplier_x = getRandomFloat((float)0.07, (float)0.02);
@@ -154,6 +154,9 @@ public class Fruit {
     		isActive = false;
     	}
     	//canvas.drawCircle(current.x, current.y, 2, paint);
+    	if(this.isSliced() && this.splitPoint1 != null) {
+    		canvas.drawLine(splitPoint1.x, splitPoint1.y, splitPoint2.x, splitPoint2.y, this.paint);
+    	}
     	canvas.drawPath(this.getTransformedPath(), this.paint);
     }
     
@@ -322,6 +325,16 @@ public class Fruit {
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = null;
     	Path bottomPath = null;
+    	
+    	if(!this.isSliced()) {
+        	return new Fruit[0];
+        }
+    	
+    	this.splitPoint1 = p1;
+    	this.splitPoint2 = p2;
+        this.isActive = false;
+        this.sliced = true;
+        
     	// TODO BEGIN CS349
         // calculate angle between points
         // rotate and flatten points passed in
@@ -332,35 +345,32 @@ public class Fruit {
         if (topPath != null && bottomPath != null) {
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
         }*/
-    	if(sliced) {
-    		this.isActive = false;
-    		
-    		Fruit[] fruits = new Fruit[] {new Fruit(new RectF(0, 0, 50, 50)), new Fruit(new RectF(10, 10, 50, 50))};
-    		
-    		fruits[0].sliced = true;
-    		fruits[0].current = this.current;
-    		fruits[0].direction = -1;
-    		fruits[0].multiplier_y = (float)0.01;
-    		fruits[0].multiplier_x = 0;
-    		fruits[0].transform = this.transform;
-    		fruits[0].x_location = this.x_location;
-    		fruits[0].x_start = this.x_start;
-    		fruits[0].paint = this.paint;
-    		
-    		fruits[1].sliced = true;
-    		fruits[1].current = this.current;
-    		fruits[1].current.x = this.current.x + 50;
-    		fruits[1].direction = -1;
-    		fruits[1].multiplier_y = (float)0.01;
-    		fruits[1].multiplier_x = 0;
-    		fruits[1].transform = transform;
-    		fruits[1].x_location = this.x_location;
-    		fruits[1].x_start = this.x_start;
-    		fruits[1].paint = this.paint;
-    		
-    		return fruits ;
-    	}
-        return new Fruit[0];
+		
+		Fruit[] fruits = new Fruit[] {new Fruit(new RectF(0, 0, 50, 50)), new Fruit(new RectF(10, 10, 50, 50))};
+		
+		fruits[0].sliced = true;
+		fruits[0].current = this.current;
+		fruits[0].direction = -1;
+		fruits[0].multiplier_y = (float)0.01;
+		fruits[0].multiplier_x = 0;
+		fruits[0].transform = this.transform;
+		fruits[0].x_location = this.x_location;
+		fruits[0].x_start = this.x_start;
+		fruits[0].paint = this.paint;
+		
+		fruits[1].sliced = true;
+		fruits[1].current = this.current;
+		fruits[1].current.x = this.current.x + 50;
+		fruits[1].direction = -1;
+		fruits[1].multiplier_y = (float)0.01;
+		fruits[1].multiplier_x = 0;
+		fruits[1].transform = transform;
+		fruits[1].x_location = this.x_location;
+		fruits[1].x_start = this.x_start;
+		fruits[1].paint = this.paint;
+		
+		return fruits ;
+    	
     }
     
     public boolean isSliced() {

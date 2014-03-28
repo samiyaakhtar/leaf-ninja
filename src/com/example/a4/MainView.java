@@ -75,6 +75,11 @@ public class MainView extends View implements Observer {
                             Fruit s = i.next();
                             if (s.isActive() && !s.isSliced() && s.intersects(drag.getStart(), drag.getEnd())) {
                             	s.setFillColor(Color.RED);
+
+                                s.isActive = false;
+                                s.sliced = true;
+                                
+                            	
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
 
@@ -98,6 +103,7 @@ public class MainView extends View implements Observer {
                                     Log.e("fruit_ninja", "Error: " + ex.getMessage());
                                     s.setFillColor(Color.GRAY);
                                 }
+                                
                             } else {
                                 //s.setFillColor(Color.BLUE);
                             }
