@@ -78,14 +78,14 @@ public class Fruit {
         this.sliced = false;
         this.flyPath = new Path();
         
-        this.multiplier_x = getRandomFloat((float)0.07, (float)0.02);
-        this.multiplier_y = getRandomFloat((float)0.07, (float)0.05);
+        this.multiplier_x = getRandomFloat((float)0.09, (float)0.05);
+        this.multiplier_y = getRandomFloat((float)0.1, (float)0.08);
         
         this.translate(current.x, current.y);
         this.x_location = current.x;
         this.x_start = current.x;
         
-        Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
+        // Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
     }
     
 
@@ -155,7 +155,7 @@ public class Fruit {
     	}
     	//canvas.drawCircle(current.x, current.y, 2, paint);
     	if(this.isSliced() && this.splitPoint1 != null) {
-    		canvas.drawLine(splitPoint1.x, splitPoint1.y, splitPoint2.x, splitPoint2.y, this.paint);
+    		//canvas.drawLine(splitPoint1.x, splitPoint1.y, splitPoint2.x, splitPoint2.y, this.paint);
     	}
     	canvas.drawPath(this.getTransformedPath(), this.paint);
     }
@@ -182,7 +182,7 @@ public class Fruit {
         	*/
     	}
     	
-    	Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y + "x_location = " + x_location);
+    	//Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y + "x_location = " + x_location);
     }
 
     /**
@@ -237,8 +237,9 @@ public class Fruit {
 		PointF intersection_point = ProjectPointOnLine(p1, p2, getCenterOfFruit());
 		intersected = CheckIfPointLiesInside(intersection_point);
 
+		
 		if(intersected) {
-
+			
 				if(p1.y < pointy1 && p2.y > pointy2) {
 		    		sliced = true;
 		    		intersected = true;
@@ -256,7 +257,8 @@ public class Fruit {
 		    		intersected = true;
 		    	}
 
-	    	return intersected;
+				return sliced;
+	    	
 		}
 
 		return false;
@@ -327,7 +329,8 @@ public class Fruit {
     	Path bottomPath = null;
     	
     	if(!this.isSliced()) {
-        	return new Fruit[0];
+    		//this.setFillColor(Color.BLACK);
+        	//return new Fruit[0];
         }
     	
     	this.splitPoint1 = p1;
@@ -335,18 +338,57 @@ public class Fruit {
         this.isActive = false;
         this.sliced = true;
         
+        /*
+        double angle = Angle(p1, p2); 
+        Matrix at = new Matrix();
+        
+        at.postRotate((float)-angle);
+        at.postTranslate(-p1.x, -p1.y);
+        
+        Path myCurrentShape = this.getTransformedPath();
+
+        Path newPath = this.getTransformedPath();
+        this.getTransformedPath().transform(at, newPath);
+        RectF bigRect = new RectF();
+        newPath.computeBounds(bigRect, true);
+        //myCurrentShape.computeBounds(bigRect, true);
+        //RectF rect1 = new RectF(bigRect.left, -1000, 1000, 1000);
+        //RectF rect2 = new RectF(bigRect.left, 0, 1000, 1000);
+        RectF rect1 = new RectF(bigRect.left, -1000, 1000, 1000);
+        RectF rect2 = new RectF(bigRect.left, 0, 1000, 1000);
+        
+        Path newPath1 = new Path();
+        newPath1.addRect(rect1, Path.Direction.CCW);
+        Path newPath2 = new Path();
+        newPath2.addRect(rect2, Path.Direction.CCW);
+
+        topPath = new Path(myCurrentShape);
+       	bottomPath = new Path(myCurrentShape);
+
+       	topPath.op(topPath, newPath1, Path.Op.XOR);
+       	bottomPath.op(bottomPath, newPath2, Path.Op.XOR);
+
+        
+        if(at.invert(at)) {
+        	//topPath = 
+        	topPath.transform(at);
+        	bottomPath.transform(at);
+        }
+        */
+        
     	// TODO BEGIN CS349
         // calculate angle between points
         // rotate and flatten points passed in
         // rotate region
         // define region masks and use to split region into top and bottom
         // TODO END CS349
-    	/*
+    	
         if (topPath != null && bottomPath != null) {
-           return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        }*/
+           //return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
+        }
 		
-		Fruit[] fruits = new Fruit[] {new Fruit(new RectF(0, 0, 50, 50)), new Fruit(new RectF(10, 10, 50, 50))};
+		Fruit[] fruits = new Fruit[] {new Fruit(this.fruitBounds), new Fruit(new RectF(this.fruitBounds))};
+		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
 		
 		fruits[0].sliced = true;
 		fruits[0].current = this.current;
@@ -360,7 +402,7 @@ public class Fruit {
 		
 		fruits[1].sliced = true;
 		fruits[1].current = this.current;
-		fruits[1].current.x = this.current.x + 50;
+		fruits[1].current.x = this.current.x + 100;
 		fruits[1].direction = -1;
 		fruits[1].multiplier_y = (float)0.01;
 		fruits[1].multiplier_x = 0;

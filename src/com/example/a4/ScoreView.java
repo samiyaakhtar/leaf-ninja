@@ -19,12 +19,14 @@ import java.util.Observer;
  * Score currently just increments every time we get an update
  * from the model (i.e. a new fruit is added).
  */
-public class TitleView extends TextView implements Observer {
-	private Model model;
+public class ScoreView extends TextView implements Observer {
+    private Model model;
+
     // Constructor requires model reference
-    public TitleView(Context context, Model m) {
+    public ScoreView(Context context, Model m) {
         super(context);
         model = m;
+
         // set width, height of this view
         this.setHeight(150);
         this.setWidth(MainActivity.displaySize.x);
@@ -42,7 +44,7 @@ public class TitleView extends TextView implements Observer {
         // TODO END CS349
         setBackgroundColor(Color.argb(255, 56, 48, 45));
         setTextSize(15);
-        setText("Fruits played: " + model.getTotalShapesPlayed());
+        setText("Scored: " + model.getSlashed() + "\t Dropped: " + model.getDropped());
     }
 
     // Update from model

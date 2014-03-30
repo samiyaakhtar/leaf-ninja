@@ -16,12 +16,13 @@ public class MainActivity extends Activity {
     private Model model;
     private MainView mainView;
     private TitleView titleView;
+    private ScoreView scoreView;
     public static Point displaySize;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getWindow().setTitle("CS349 A4 Demo");
+        this.getWindow().setTitle("Android Bubble Ninja!");
 
         // save display size
         Display display = getWindowManager().getDefaultDisplay();
@@ -43,11 +44,15 @@ public class MainActivity extends Activity {
         titleView = new TitleView(this.getApplicationContext(), model);
         ViewGroup v1 = (ViewGroup) findViewById(R.id.main_1);
         v1.addView(titleView);
-
+        
         mainView = new MainView(this, model);
         ViewGroup v2 = (ViewGroup) findViewById(R.id.main_2);
         v2.addView(mainView);
 
+        scoreView = new ScoreView(this, model);
+        ViewGroup v3 = (ViewGroup) findViewById(R.id.main_3);
+        v3.addView(scoreView);
+        
         // notify all views
         model.initObservers();
     }

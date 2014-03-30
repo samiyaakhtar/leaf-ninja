@@ -73,11 +73,11 @@ public class MainView extends View implements Observer {
                         Iterator<Fruit> i = model.getShapes().iterator();
                         while(i.hasNext()) {
                             Fruit s = i.next();
-                            if (s.isActive() && !s.isSliced() && s.intersects(drag.getStart(), drag.getEnd())) {
-                            	s.setFillColor(Color.RED);
-
-                                s.isActive = false;
-                                s.sliced = true;
+                            if (s != null && s.isActive() && !s.isSliced() && s.intersects(drag.getStart(), drag.getEnd())) {
+                            	//s.setFillColor(Color.RED);
+                            	model.incrementSlashed();
+                                //s.isActive = false;
+                                //s.sliced = true;
                                 
                             	
                                 try {
@@ -86,14 +86,18 @@ public class MainView extends View implements Observer {
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
                                     if(newFruits != null && newFruits.length == 2) {
-	                                    newFruits[0].translate(0, -10);
-	                                    newFruits[1].translate(0, +10);
+	                                    //newFruits[0].translate(0, -10);
+	                                    //newFruits[1].translate(0, +10);
 	                                    // TODO END CS349
 	                                    model.add(newFruits[0]);
 	                                    model.add(newFruits[1]);
 	                                    
-	                                    newFruits[0].setFillColor(Color.YELLOW);
-	                                    newFruits[1].setFillColor(Color.YELLOW);
+	                                    //newFruits[0].setFillColor(Color.YELLOW);
+	                                    //newFruits[1].setFillColor(Color.YELLOW);
+	                                    
+                                    }
+                                    else {
+                                    	Log.e("fruit_ninja", "Split returned nothing");
                                     }
                                     // TODO BEGIN CS349
                                     // delete original fruit from model
@@ -141,9 +145,10 @@ public class MainView extends View implements Observer {
     			       //f1.current.x = 0;
     			       //f1.current.y = 500;
     			        model.add(f1);
+    			        model.incrementTotal();
     				}});
     		}
-    	}, 0, 1000); 
+    	}, 0, 700); 
     	
     }
     
