@@ -4,6 +4,7 @@
  * Jeff Avery
  */
 package com.example.a4;
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.example.a4complete.R;
@@ -23,6 +24,8 @@ public class Fruit {
     public PointF current;
     public Color color;
     
+    public Path splitPath;
+    
     private int flyX = 0;
     
 	Random rand = new Random(System.currentTimeMillis());
@@ -34,10 +37,9 @@ public class Fruit {
     private float multiplier_y;
     public boolean isActive;
     public boolean sliced;
-    private PointF splitPoint1;
-    private PointF splitPoint2;
-    private Path splitPath;
+
     private Path flyPath;
+    private Region clipRegion;
     
     private float x_location; //Used for now
     private float x_start;
@@ -86,7 +88,7 @@ public class Fruit {
         this.translate(current.x, current.y);
         this.x_location = current.x;
         this.x_start = current.x;
-        
+        this.clipRegion = new Region(0, 0, MainActivity.displaySize.x, MainActivity.displaySize.y);
         // Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
     }
     
@@ -151,14 +153,12 @@ public class Fruit {
     		isActive = false;
     	}
     	
-    	if(this.isSliced() && this.splitPoint1 != null && splitPoint2 != null && this.splitPath != null) {
-    		// Log.d("draw", "I'm drawing the line Samiya");
-    		//canvas.drawPath(this.getTransformedPath(this.splitPath), paint);
-    		Log.d("draw", "Supposed to draw plit path");
-    		canvas.drawPath(this.splitPath, paint);
-    		//canvas.drawLine(splitPoint1.x, splitPoint1.y, splitPoint2.x, splitPoint2.y, this.paint);
-    	}
     	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	
+    	if(splitPath != null) {
+
+        	canvas.drawPath((splitPath), this.paint);
+    	}
     }
     
     void performGravity() {
@@ -185,18 +185,31 @@ public class Fruit {
      */
     
     public boolean intersects(PointF p1, PointF p2) {
-        // TODO BEGIN CS349
-        // calculate angle between points
-        // rotate and flatten points passed in 
-        // rotate path and create region for comparison
-        // TODO END CS349
-    	// calculate angle between points
-    	// rotate the points so that they're horizontal
-    	// rotate the region by the same angle
-    	double angle = Angle(p1, p2);
+    	Region newRegion = new Region();
+    	newRegion.setPath(this.getTransformedPath(), this.clipRegion);
     	
+    	Path linePath = new Path();
+    	linePath.moveTo(p1.x,  p1.y);
+    	linePath.lineTo(p1.x + 2,  p1.y + 2);
+    	linePath.lineTo(p2.x,  p2.y);
+    	linePath.lineTo(p2.x + 2,  p2.y + 2);
     	
-        return false;
+    	Region lineRegion = new Region();
+    	
+    	lineRegion.setPath(linePath,  clipRegion);
+    	
+    	splitPath = linePath;
+    	
+    	if (contains(p1) || contains(p2)) {
+    		return false;
+    	}
+    	if (newRegion.op(lineRegion ,Region.Op.INTERSECT)) {
+    		sliced = true;
+    		return true;
+    		
+    	}
+    	
+    	return false;
     } 
     
     /*
@@ -233,23 +246,11 @@ public class Fruit {
 		
 		if(intersected) {
 			
-				if(p1.y < pointy1 && p2.y > pointy2) {
-		    		sliced = true;
-		    		intersected = true;
-		    	}
-		    	else if(p2.y < pointy1 && p1.y > pointy2) {
-		    		sliced = true;
-		    		intersected = true;
-		    	}
-		    	else if(p1.x < pointx1 && p2.x > pointx2) {
-		    		sliced = true;
-		    		intersected = true;
-		    	}
-		    	else if(p2.x < pointx1 && p1.x > pointx2) {
-		    		sliced = true;
-		    		intersected = true;
-		    	}
-
+				if(!this.contains(p1) && !this.contains(p2)) {
+					sliced = true;
+					intersected = true;
+					
+				}
 				return sliced;
 	    	
 		}
@@ -311,7 +312,7 @@ public class Fruit {
      */
     public boolean contains(PointF p1) {
         Region region = new Region();
-        boolean valid = region.setPath(getTransformedPath(), new Region());
+        boolean valid = region.setPath(getTransformedPath(), this.clipRegion);
         return valid && region.contains((int) p1.x, (int) p1.y);
     }
 
@@ -330,12 +331,6 @@ public class Fruit {
         	return new Fruit[0];
         }
     	
-    	this.splitPoint1 = p1;
-    	this.splitPoint2 = p2;
-    	this.splitPath = new Path();
-    	this.splitPath.moveTo(p1.x,  p1.y);
-    	this.splitPath.lineTo(p2.x,  p2.y);
-    	//this.splitPath.moveTo(p1.x,  p1.y);
         this.isActive = false;
         this.sliced = true;
         
@@ -386,14 +381,14 @@ public class Fruit {
         // define region masks and use to split region into top and bottom
         // TODO END CS349
     	*/
-        //if (topPath != null && bottomPath != null) {
+        if (topPath != null && bottomPath != null) {
            return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        //}
+        }
 		
         
-		//Fruit[] fruits = new Fruit[] {new Fruit(this.fruitBounds), new Fruit(new RectF(this.fruitBounds))};
+		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
 		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
-		/*
+		
 		fruits[0].sliced = true;
 		fruits[0].current = this.current;
 		fruits[0].direction = -1;
@@ -403,8 +398,7 @@ public class Fruit {
 		fruits[0].x_location = this.x_location;
 		fruits[0].x_start = this.x_start;
 		fruits[0].paint = this.paint;
-		fruits[0].splitPoint1 = this.splitPoint1;
-		fruits[0].splitPoint2 = this.splitPoint2;
+		fruits[0].splitPath = this.splitPath;
 		fruits[0].splitPath = this.splitPath;
 		
 		fruits[1].sliced = true;
@@ -417,12 +411,11 @@ public class Fruit {
 		fruits[1].x_location = this.x_location + 100;
 		fruits[1].x_start = this.x_start + 100;
 		fruits[1].paint = this.paint;
-		fruits[1].splitPoint1 = this.splitPoint1;
-		fruits[1].splitPoint2 = this.splitPoint2;
+		fruits[1].splitPath = this.splitPath;
 		fruits[1].splitPath = this.splitPath;
 		
 		return fruits ;
-    	*/
+    	
     }
     
     public boolean isSliced() {

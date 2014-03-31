@@ -6,7 +6,9 @@
 package com.example.a4;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.*;
 import android.util.Log;
@@ -44,9 +46,16 @@ public class MainView extends View implements Observer {
         model = m;
         model.addObserver(this);
 
-        
         startTimers();
 		model.startGame();
+		
+		Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+        f1.translate(100, -100);
+        model.add(f1);
+
+        Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+        f2.translate(200, -200);
+        model.add(f2);
         
         // TODO END CS349
 
@@ -125,6 +134,7 @@ public class MainView extends View implements Observer {
     	}
     }
     void startTimers() {
+    	
     	gameTimer.schedule(new TimerTask() { 
     		public void run() {
     			main_activity.runOnUiThread(new Runnable() {
@@ -135,7 +145,8 @@ public class MainView extends View implements Observer {
     		}
     	}, 0, 25);
     	gameRunning = true;
-
+    	
+    	
     	fruitTimer.schedule(new TimerTask() { 
     		@Override
     		public void run() {
@@ -209,11 +220,36 @@ public class MainView extends View implements Observer {
             }
         }
         else {
-        	main_activity.finish();
+        	showEndGameDialog();
         }
         
     }
 
+    public void showEndGameDialog() {
+    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+    			main_activity);
+ 
+			// set title
+			alertDialogBuilder.setTitle("Game over!");
+ 
+			// set dialog message
+			alertDialogBuilder
+				.setMessage("Click Ok to go to main menu!")
+				.setCancelable(false)
+				.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						// if this button is clicked, close
+						// current activity
+						main_activity.finish();
+					}
+				  });
+ 
+				// create alert dialog
+				AlertDialog alertDialog = alertDialogBuilder.create();
+ 
+				// show it
+				alertDialog.show();
+    }
     @Override
     public void update(Observable observable, Object data) {
     	checkModelState();
