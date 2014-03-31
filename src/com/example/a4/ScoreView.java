@@ -28,7 +28,7 @@ public class ScoreView extends TextView implements Observer {
         model = m;
 
         // set width, height of this view
-        this.setHeight(150);
+        this.setHeight(120);
         this.setWidth(MainActivity.displaySize.x);
 
         // register with model so that we get updates
@@ -44,7 +44,7 @@ public class ScoreView extends TextView implements Observer {
         // TODO END CS349
         setBackgroundColor(Color.argb(255, 56, 48, 45));
         setTextSize(15);
-        setText("Scored: " + model.getSlashed() + "\t Dropped: " + model.getDropped());
+        setText("Scored: " + model.getSlashed() + "\t\t\t Dropped: " + model.getDropped() + "\t\t\t Lives: " + model.getNumLivesRemaining());
     }
 
     // Update from model

@@ -5,8 +5,13 @@
  */
 package com.example.a4;
 import java.util.Random;
+
+import com.example.a4complete.R;
+
 import android.graphics.*;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.view.Display;
 
 /**
  * Class that represents a Fruit. Can be split into two separate fruits.
@@ -18,7 +23,6 @@ public class Fruit {
     public PointF current;
     public Color color;
     
-    private RectF fruitBounds;
     private int flyX = 0;
     
 	Random rand = new Random(System.currentTimeMillis());
@@ -32,6 +36,7 @@ public class Fruit {
     public boolean sliced;
     private PointF splitPoint1;
     private PointF splitPoint2;
+    private Path splitPath;
     private Path flyPath;
     
     private float x_location; //Used for now
@@ -49,6 +54,7 @@ public class Fruit {
             this.path.lineTo(points[i], points[i + 1]);
         }
         this.path.moveTo(points[0], points[1]);
+        //this.path.computeBounds(this.fruitBounds, true);
     }
 
     Fruit(Region region) {
@@ -59,13 +65,9 @@ public class Fruit {
     Fruit(Path path) {
         init();
         this.path = path;
-        this.path.computeBounds(this.fruitBounds, true);
+        //this.path.computeBounds(this.fruitBounds, true);
     }
-    Fruit(RectF bounds) {
-    	init();
-    	this.fruitBounds = bounds;
-    	this.path.addArc(this.fruitBounds, 0, 360);
-    }
+   
 
     private void init() {
         this.paint.setColor(getRandomColor());
@@ -79,7 +81,7 @@ public class Fruit {
         this.flyPath = new Path();
         
         this.multiplier_x = getRandomFloat((float)0.09, (float)0.05);
-        this.multiplier_y = getRandomFloat((float)0.1, (float)0.08);
+        this.multiplier_y = getRandomFloat((float)0.07, (float)0.05);
         
         this.translate(current.x, current.y);
         this.x_location = current.x;
@@ -122,6 +124,12 @@ public class Fruit {
         originalPath.transform(transform, transformedPath);
         return transformedPath;
     }
+    public Path getTransformedPath(Path originalPath) {
+    	
+        Path transformedPath = new Path();
+        originalPath.transform(transform, transformedPath);
+        return transformedPath;
+    }
 
     public int getRandomNumber(int maximum, int minimum) {
 	  	int randomNum = minimum + (int)(Math.random()*(maximum - minimum));
@@ -132,29 +140,22 @@ public class Fruit {
      * transform and paint settings (fill, outline)
      */
     public void draw(Canvas canvas) {
-        // TODO BEGIN CS349
-        // tell the shape to draw itself using the matrix and paint parameters
-        // TODO END CS349
-    	/*
-    	if(current.y < max_y) {
-    		direction = -1;
-    		//x_location = max_x;
-    		max_x = 2*(max_x - (int)x_start);
-    	} */
+        
     	if(!isSliced() && current.y < max_y && (Math.abs(x_location - max_x) < 19)) {
-    	//if(current.y < max_y) {
-    		//this.paint.setColor(Color.BLACK);
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
-    		//x_location = max_x;
-    		//max_x = 2*(max_x - (int)x_start);
     	}
     	performGravity();
+    	
     	if(direction == -1 && current.y > 900) {
     		isActive = false;
     	}
-    	//canvas.drawCircle(current.x, current.y, 2, paint);
-    	if(this.isSliced() && this.splitPoint1 != null) {
+    	
+    	if(this.isSliced() && this.splitPoint1 != null && splitPoint2 != null && this.splitPath != null) {
+    		// Log.d("draw", "I'm drawing the line Samiya");
+    		//canvas.drawPath(this.getTransformedPath(this.splitPath), paint);
+    		Log.d("draw", "Supposed to draw plit path");
+    		canvas.drawPath(this.splitPath, paint);
     		//canvas.drawLine(splitPoint1.x, splitPoint1.y, splitPoint2.x, splitPoint2.y, this.paint);
     	}
     	canvas.drawPath(this.getTransformedPath(), this.paint);
@@ -174,22 +175,15 @@ public class Fruit {
         	translate(adder, current.y*multiplier_y);
         	x_location += adder;
         	
-    		/*
-        	current.x = current.x + (x_location - max_x)*multiplier_x;
-        	current.y = current.y + current.y*multiplier_y;
-        	translate((x_location - max_x)*multiplier_x, current.y*multiplier_y);
-        	x_location += (x_location - max_x)*multiplier_x;
-        	*/
     	}
     	
-    	//Log.d("MainActivity", "Current.x = " + current.x + ", current.y = " + current.y + "x_location = " + x_location);
     }
 
     /**
      * Tests whether the line represented by the two points intersects
      * this Fruit.
      */
-    /*
+    
     public boolean intersects(PointF p1, PointF p2) {
         // TODO BEGIN CS349
         // calculate angle between points
@@ -204,7 +198,7 @@ public class Fruit {
     	
         return false;
     } 
-    */
+    
     /*
      * Calculates and returns the angle between the x axis and the line formed by 
      * two points passed as parameter to this function
@@ -217,23 +211,22 @@ public class Fruit {
         
         return angle;
     }
+    
     /**
      * Tests whether the line represented by the two points intersects
      * this Fruit. 
      */
-    public boolean intersects(PointF p1, PointF p2) {
+    public boolean myintersects(PointF p1, PointF p2) {
     	 // TODO BEGIN CS349
         // TODO END CS349
+    	/*
     	int pointx1 = (int)current.x;
     	int pointx2 = (int)(current.x + fruitBounds.width());
     	int pointy1 = (int)current.y;
     	int pointy2 = (int)(current.y + fruitBounds.height());
 
     	boolean intersected = false;
-    	/*
-    	 * Checking to see if the projection of the line from the center lies inside the fruit boundaries. If yes, then 
-    	 * checking to see if the line goes through the entire fruit 
-    	 */
+    	
 		PointF intersection_point = ProjectPointOnLine(p1, p2, getCenterOfFruit());
 		intersected = CheckIfPointLiesInside(intersection_point);
 
@@ -262,12 +255,13 @@ public class Fruit {
 		}
 
 		return false;
-
-    	
+*/
+    	return false;
     }
     /*
      * Returns the center of the fruit (approximate)
      */
+    /*
     private PointF getCenterOfFruit() {
     	int diameter = 0;
     	if(fruitBounds.width() >= fruitBounds.height()) {
@@ -279,10 +273,12 @@ public class Fruit {
     	PointF center = new PointF(current.x + diameter/2, current.y + diameter/2);
     	return center;
     }
+    */
     /*
      * Returns boolean based on whether the point lies inside the circle or not
      * 
      */
+    /*
     private boolean CheckIfPointLiesInside(PointF p) {
     	if(p.x >= current.x 
     			&& p.y >= current.y 
@@ -292,6 +288,7 @@ public class Fruit {
     	}
     	return false;
     }
+    */
     /*
      * Function to project point on a line 
      * http://www.vcskicks.com/code-snippet/point-projection.php
@@ -330,13 +327,19 @@ public class Fruit {
     	
     	if(!this.isSliced()) {
     		//this.setFillColor(Color.BLACK);
-        	//return new Fruit[0];
+        	return new Fruit[0];
         }
     	
     	this.splitPoint1 = p1;
     	this.splitPoint2 = p2;
+    	this.splitPath = new Path();
+    	this.splitPath.moveTo(p1.x,  p1.y);
+    	this.splitPath.lineTo(p2.x,  p2.y);
+    	//this.splitPath.moveTo(p1.x,  p1.y);
         this.isActive = false;
         this.sliced = true;
+        
+        Log.d("split", "Plit path = " + splitPath.toString());
         
         /*
         double angle = Angle(p1, p2); 
@@ -374,7 +377,7 @@ public class Fruit {
         	topPath.transform(at);
         	bottomPath.transform(at);
         }
-        */
+        
         
     	// TODO BEGIN CS349
         // calculate angle between points
@@ -382,14 +385,15 @@ public class Fruit {
         // rotate region
         // define region masks and use to split region into top and bottom
         // TODO END CS349
-    	
-        if (topPath != null && bottomPath != null) {
-           //return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        }
+    	*/
+        //if (topPath != null && bottomPath != null) {
+           return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
+        //}
 		
-		Fruit[] fruits = new Fruit[] {new Fruit(this.fruitBounds), new Fruit(new RectF(this.fruitBounds))};
+        
+		//Fruit[] fruits = new Fruit[] {new Fruit(this.fruitBounds), new Fruit(new RectF(this.fruitBounds))};
 		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
-		
+		/*
 		fruits[0].sliced = true;
 		fruits[0].current = this.current;
 		fruits[0].direction = -1;
@@ -399,6 +403,9 @@ public class Fruit {
 		fruits[0].x_location = this.x_location;
 		fruits[0].x_start = this.x_start;
 		fruits[0].paint = this.paint;
+		fruits[0].splitPoint1 = this.splitPoint1;
+		fruits[0].splitPoint2 = this.splitPoint2;
+		fruits[0].splitPath = this.splitPath;
 		
 		fruits[1].sliced = true;
 		fruits[1].current = this.current;
@@ -407,12 +414,15 @@ public class Fruit {
 		fruits[1].multiplier_y = (float)0.01;
 		fruits[1].multiplier_x = 0;
 		fruits[1].transform = transform;
-		fruits[1].x_location = this.x_location;
-		fruits[1].x_start = this.x_start;
+		fruits[1].x_location = this.x_location + 100;
+		fruits[1].x_start = this.x_start + 100;
 		fruits[1].paint = this.paint;
+		fruits[1].splitPoint1 = this.splitPoint1;
+		fruits[1].splitPoint2 = this.splitPoint2;
+		fruits[1].splitPath = this.splitPath;
 		
 		return fruits ;
-    	
+    	*/
     }
     
     public boolean isSliced() {

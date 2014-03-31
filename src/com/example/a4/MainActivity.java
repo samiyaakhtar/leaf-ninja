@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
         super.onPostCreate(savedInstanceState);
 
         // create the views and add them to the main activity
-        titleView = new TitleView(this.getApplicationContext(), model);
+        titleView = new TitleView(this, model);
         ViewGroup v1 = (ViewGroup) findViewById(R.id.main_1);
         v1.addView(titleView);
         
