@@ -25,6 +25,7 @@ public class Fruit {
     public Color color;
     
     public Path splitPath;
+    private Region testShape;
     
     private int flyX = 0;
     
@@ -149,7 +150,7 @@ public class Fruit {
     	}
     	performGravity();
     	
-    	if(direction == -1 && current.y > 900) {
+    	if(direction == -1 && current.y > MainActivity.displaySize.y + 50) {
     		isActive = false;
     	}
     	
@@ -158,6 +159,9 @@ public class Fruit {
     	if(splitPath != null) {
 
         	canvas.drawPath((splitPath), this.paint);
+    	}
+    	if(testShape != null) {
+    		canvas.drawPath(testShape.getBoundaryPath(), paint);
     	}
     }
     
@@ -226,88 +230,6 @@ public class Fruit {
     }
     
     /**
-     * Tests whether the line represented by the two points intersects
-     * this Fruit. 
-     */
-    public boolean myintersects(PointF p1, PointF p2) {
-    	 // TODO BEGIN CS349
-        // TODO END CS349
-    	/*
-    	int pointx1 = (int)current.x;
-    	int pointx2 = (int)(current.x + fruitBounds.width());
-    	int pointy1 = (int)current.y;
-    	int pointy2 = (int)(current.y + fruitBounds.height());
-
-    	boolean intersected = false;
-    	
-		PointF intersection_point = ProjectPointOnLine(p1, p2, getCenterOfFruit());
-		intersected = CheckIfPointLiesInside(intersection_point);
-
-		
-		if(intersected) {
-			
-				if(!this.contains(p1) && !this.contains(p2)) {
-					sliced = true;
-					intersected = true;
-					
-				}
-				return sliced;
-	    	
-		}
-
-		return false;
-*/
-    	return false;
-    }
-    /*
-     * Returns the center of the fruit (approximate)
-     */
-    /*
-    private PointF getCenterOfFruit() {
-    	int diameter = 0;
-    	if(fruitBounds.width() >= fruitBounds.height()) {
-    		diameter = (int)fruitBounds.width();
-    	}
-    	else {
-    		diameter = (int)fruitBounds.height();
-    	}
-    	PointF center = new PointF(current.x + diameter/2, current.y + diameter/2);
-    	return center;
-    }
-    */
-    /*
-     * Returns boolean based on whether the point lies inside the circle or not
-     * 
-     */
-    /*
-    private boolean CheckIfPointLiesInside(PointF p) {
-    	if(p.x >= current.x 
-    			&& p.y >= current.y 
-    			&& p.x <= current.x + fruitBounds.width() 
-    			&& p.y <= current.y + fruitBounds.height()) {
-    		return true;
-    	}
-    	return false;
-    }
-    */
-    /*
-     * Function to project point on a line 
-     * http://www.vcskicks.com/code-snippet/point-projection.php
-     */
-    private PointF ProjectPointOnLine(PointF line1, PointF line2, PointF toProject)
-    {
-        double m = (double)(line2.y - line1.y) / (line2.x - line1.x);
-        double b = (double)line1.y - (m * line1.x);
-
-        double x = (m * toProject.y + toProject.x - m * b) / (m * m + 1);
-        double y = (m * m * toProject.y + m * toProject.x + b) / (m * m + 1);
-
-        return new PointF((int)x, (int)y);
-    }
-    
-    
-    
-    /**
      * Returns whether the given point is within the Fruit's shape.
      */
     public boolean contains(PointF p1) {
@@ -325,6 +247,8 @@ public class Fruit {
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = null;
     	Path bottomPath = null;
+    	Region topRegion = new Region();
+    	Region bottomRegion = new Region();
     	
     	if(!this.isSliced()) {
     		//this.setFillColor(Color.BLACK);
@@ -334,44 +258,41 @@ public class Fruit {
         this.isActive = false;
         this.sliced = true;
         
-        Log.d("split", "Plit path = " + splitPath.toString());
-        
-        /*
         double angle = Angle(p1, p2); 
         Matrix at = new Matrix();
-        
-        at.postRotate((float)-angle);
-        at.postTranslate(-p1.x, -p1.y);
-        
-        Path myCurrentShape = this.getTransformedPath();
 
-        Path newPath = this.getTransformedPath();
-        this.getTransformedPath().transform(at, newPath);
-        RectF bigRect = new RectF();
-        newPath.computeBounds(bigRect, true);
-        //myCurrentShape.computeBounds(bigRect, true);
-        //RectF rect1 = new RectF(bigRect.left, -1000, 1000, 1000);
-        //RectF rect2 = new RectF(bigRect.left, 0, 1000, 1000);
-        RectF rect1 = new RectF(bigRect.left, -1000, 1000, 1000);
-        RectF rect2 = new RectF(bigRect.left, 0, 1000, 1000);
+        //at.postTranslate(p1.x, p1.y);
+        at.postTranslate(-p1.x,  -p1.y);
+        at.postRotate((float)(-angle* 180/Math.PI ));
         
-        Path newPath1 = new Path();
-        newPath1.addRect(rect1, Path.Direction.CCW);
-        Path newPath2 = new Path();
-        newPath2.addRect(rect2, Path.Direction.CCW);
-
-        topPath = new Path(myCurrentShape);
-       	bottomPath = new Path(myCurrentShape);
-
-       	topPath.op(topPath, newPath1, Path.Op.XOR);
-       	bottomPath.op(bottomPath, newPath2, Path.Op.XOR);
-
         
-        if(at.invert(at)) {
-        	//topPath = 
-        	topPath.transform(at);
-        	bottomPath.transform(at);
-        }
+        Region myCurrentShape = new Region();
+        Path tempPath = this.getTransformedPath();
+        tempPath.transform(at);
+        myCurrentShape.setPath(tempPath, this.clipRegion);
+        
+        
+        Region rect1 = new Region(new Rect(0, -1000, 1000, 1000));
+        Region rect2 = new Region(new Rect(0, 0, 1000, 1000));
+        
+        topRegion = new Region(myCurrentShape);
+        bottomRegion = new Region(myCurrentShape);
+
+        //testShape = rect2;
+        
+       	/*
+       	 * Intersection of the two big rectangles with the fruit shape to
+       	 * calculate the top and bottom half
+       	 */
+        topRegion.op(topRegion, rect1, Region.Op.INTERSECT);
+        bottomRegion.op(bottomRegion, rect2, Region.Op.INTERSECT);
+
+        at.invert(at);
+        
+       	topPath = topRegion.getBoundaryPath();
+        bottomPath = bottomRegion.getBoundaryPath();
+        topPath.transform(at);
+        bottomPath.transform(at);
         
         
     	// TODO BEGIN CS349
@@ -380,13 +301,12 @@ public class Fruit {
         // rotate region
         // define region masks and use to split region into top and bottom
         // TODO END CS349
-    	*/
-        if (topPath != null && bottomPath != null) {
-           return new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        }
-		
-        
+
 		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
+		
+        if (topPath != null && bottomPath != null) {
+        	fruits = new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
+        }
 		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
 		
 		fruits[0].sliced = true;
@@ -399,20 +319,21 @@ public class Fruit {
 		fruits[0].x_start = this.x_start;
 		fruits[0].paint = this.paint;
 		fruits[0].splitPath = this.splitPath;
-		fruits[0].splitPath = this.splitPath;
+    	//fruits[0].translate(-10, 0);
+
 		
 		fruits[1].sliced = true;
 		fruits[1].current = this.current;
-		fruits[1].current.x = this.current.x + 100;
+		fruits[1].current.x = this.current.x;
 		fruits[1].direction = -1;
 		fruits[1].multiplier_y = (float)0.01;
 		fruits[1].multiplier_x = 0;
 		fruits[1].transform = transform;
-		fruits[1].x_location = this.x_location + 100;
-		fruits[1].x_start = this.x_start + 100;
+		fruits[1].x_location = this.x_location;
+		fruits[1].x_start = this.x_start;
 		fruits[1].paint = this.paint;
 		fruits[1].splitPath = this.splitPath;
-		fruits[1].splitPath = this.splitPath;
+    	//fruits[0].translate(+10, 0);
 		
 		return fruits ;
     	

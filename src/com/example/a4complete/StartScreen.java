@@ -28,4 +28,8 @@ public class StartScreen extends Activity {
 		startActivity(intent);
 	}
 	
+	public void endApplication(View view) {
+		finish();
+        System.exit(0);
+	}
 }

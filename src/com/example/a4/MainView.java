@@ -48,7 +48,7 @@ public class MainView extends View implements Observer {
 
         startTimers();
 		model.startGame();
-		
+		/*
 		Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f1.translate(100, -100);
         model.add(f1);
@@ -56,7 +56,7 @@ public class MainView extends View implements Observer {
         Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f2.translate(200, -200);
         model.add(f2);
-        
+        */
         // TODO END CS349
 
         // add controller
@@ -154,8 +154,9 @@ public class MainView extends View implements Observer {
     			main_activity.runOnUiThread(new Runnable() {
     				@Override
     				public void run() {
-    	   			   Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+    	   			   Fruit f1 = new Fruit(new float[] {0, 30, 30, 0, 60, 0, 90, 30, 90, 60, 60, 90, 30, 90, 0, 60});
     	   			   //Fruit f1 = new Fruit(new RectF(0, 0, model.getRandomNumber(100, 50), model.getRandomNumber(100, 50)));
+    	   			   //Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
     			       //f1.translate(0, 500);
     			       //f1.current.x = 0;
     			       //f1.current.y = 500;
@@ -229,12 +230,17 @@ public class MainView extends View implements Observer {
     	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
     			main_activity);
  
+    		String scoreCard = "";
+    		scoreCard += "Scored: " + model.getSlashed() + "\n";
+    		scoreCard += "Dropped: " + model.getDropped() + "\n";
+    		scoreCard += "Lives remaining: " + model.getNumLivesRemaining() + "\n";
+    		scoreCard += "Click Ok to go to main menu!" + "\n";
 			// set title
-			alertDialogBuilder.setTitle("Game over!");
+			alertDialogBuilder.setTitle("Game Over!");
  
 			// set dialog message
 			alertDialogBuilder
-				.setMessage("Click Ok to go to main menu!")
+				.setMessage(scoreCard)
 				.setCancelable(false)
 				.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {

@@ -16,15 +16,27 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
+        android:id="@+id/btnExit"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnNewGame"
+        android:layout_alignBottom="@+id/btnNewGame"
+        android:layout_marginLeft="26dp"
+        android:layout_toRightOf="@+id/btnNewGame"
+        android:onClick="endApplication"
+        android:text="Exit" />
+
+    <Button
         android:id="@+id/btnNewGame"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="41dp"
-        android:text="New Game" 
-        android:onClick="startNewGame" />
-
+        android:layout_marginLeft="45dp"
+        android:layout_marginTop="39dp"
+        android:onClick="startNewGame"
+        android:text="New Game" />
     
 </RelativeLayout>
