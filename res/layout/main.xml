@@ -5,13 +5,15 @@
               android:orientation="vertical"
               android:background="@drawable/background1">
 
-    <LinearLayout
-            android:id="@+id/main_1"
-            android:layout_width="fill_parent"
-            android:layout_height="150px"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:orientation="horizontal" />
+    <RelativeLayout
+        android:id="@+id/main_1"
+        android:layout_width="fill_parent"
+        android:layout_height="150px"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:textAlignment="center" >
+
+    </RelativeLayout>
 
     <LinearLayout
             android:id="@+id/main_2"

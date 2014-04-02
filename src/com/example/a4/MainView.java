@@ -94,7 +94,7 @@ public class MainView extends View implements Observer {
                                 
                             	
                                 try {
-                                    Fruit[] newFruits = s.newsplit(drag.getStart(), drag.getEnd());
+                                    Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
 
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
@@ -157,12 +157,33 @@ public class MainView extends View implements Observer {
     	
     	fruitTimer.schedule(new TimerTask() { 
     		@Override
+    		
     		public void run() {
     			//addFruits();
     			main_activity.runOnUiThread(new Runnable() {
     				@Override
     				public void run() {
-    	   			   Fruit f1 = new Fruit(new float[] {0, 30, 30, 0, 60, 0, 90, 30, 90, 60, 60, 90, 30, 90, 0, 60});
+    					//Fruit f1 = new Fruit(new float[] {0, 40, 40, 0, 80, 0, 120, 40, 120, 80, 80, 120, 40, 120, 0, 80});
+    					int leafSize = model.getRandomNumber(45,  20);
+    					Fruit f1 = new Fruit(new float[] {0, leafSize, 
+    													  leafSize, 0, 
+    													  2*leafSize, 0, 
+    													  3*leafSize, leafSize, 
+    													  3*leafSize, 2*leafSize, 
+    													  2*leafSize, 3*leafSize, 
+    													  leafSize, 3*leafSize, 
+    													  0, 2*leafSize});
+    					/*
+    					Fruit f1 = new Fruit(new float[] {0, 40, 
+								  40, 0, 
+								  80, 0, 
+								  120, 40, 
+								  120, 80, 
+								  80, 120, 
+								  40, 120, 
+								  0, 80});
+    					*/
+    					//Fruit f1 = new Fruit(new float[] {0, 30, 30, 0, 60, 0, 90, 30, 90, 60, 60, 90, 30, 90, 0, 60});
     	   			   //Fruit f1 = new Fruit(new RectF(0, 0, model.getRandomNumber(100, 50), model.getRandomNumber(100, 50)));
     	   			   //Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
     			       //f1.translate(0, 500);
@@ -242,7 +263,7 @@ public class MainView extends View implements Observer {
     		scoreCard += "Scored: " + model.getSlashed() + "\n";
     		scoreCard += "Dropped: " + model.getDropped() + "\n";
     		scoreCard += "Lives remaining: " + model.getNumLivesRemaining() + "\n";
-    		scoreCard += "Click Ok to go to main menu!" + "\n";
+    		//scoreCard += "Click Ok to go to main menu!" + "\n";
 			// set title
 			alertDialogBuilder.setTitle("Game Over!");
  

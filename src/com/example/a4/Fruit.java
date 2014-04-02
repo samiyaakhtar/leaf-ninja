@@ -10,6 +10,7 @@ import java.util.Random;
 import com.example.a4complete.R;
 
 import android.graphics.*;
+import android.graphics.Paint.Style;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Display;
@@ -33,6 +34,7 @@ public class Fruit {
 	Random rand = new Random(System.currentTimeMillis());
 
     private int direction;
+    private int x_direction;
     private int max_y;
     private int max_x;
     private float multiplier_x;
@@ -53,13 +55,15 @@ public class Fruit {
         init();
         this.path.reset();
         this.path.moveTo(points[0], points[1]);
-        for (int i = 2; i < points.length; i += 2) {
-            this.path.lineTo(points[i], points[i + 1]);
+        this.path.quadTo(points[0], points[1], points[2], points[3]);
+
+        for (int i = 4; i < points.length; i += 2) {
+            //this.path.lineTo(points[i], points[i + 1]);
+        	this.path.cubicTo(points[0], points[1], points[2], points[3], points[i], points[i + 1]);
         }
         this.path.moveTo(points[0], points[1]);
         //this.path.computeBounds(this.fruitBounds, true);
     }
-
     Fruit(Region region) {
         init();
         this.path = region.getBoundaryPath();
@@ -75,14 +79,20 @@ public class Fruit {
     private void init() {
         this.paint.setColor(getRandomColor());
         this.paint.setStrokeWidth(5);
-        this.current = new PointF(getRandomNumber(120, 20), 500);
+        this.x_direction = this.getRandomNumber(2,  0);
+        //if(x_direction == 0) {
+            this.current = new PointF(getRandomNumber(200, 20), 500);
+        //}
+        //else {
+        //    this.current = new PointF(getRandomNumber(400, 150), 500);
+        //}
         this.direction = 1;
         this.max_y = getRandomNumber(120, 60);
         this.max_x = getRandomNumber(200, 100);
         this.isActive = true;
         this.sliced = false;
         this.flyPath = new Path();
-        
+                
         this.multiplier_x = getRandomFloat((float)0.09, (float)0.05);
         this.multiplier_y = getRandomFloat((float)0.07, (float)0.05);
         
@@ -147,7 +157,7 @@ public class Fruit {
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
     	}
-    	Log.d("Fruit", "Display size = " + MainActivity.displaySize.y  + ", current.y = " + current.y);
+    	//Log.d("Fruit", "Display size = " + MainActivity.displaySize.y  + ", current.y = " + current.y);
     	
     	if(direction == -1 && current.y > MainActivity.displaySize.y ) {
     		isActive = false;
@@ -155,15 +165,14 @@ public class Fruit {
     	
     	if(!this.isSliced()) {
     		performGravity();
-        	canvas.drawPath(this.getTransformedPath(), this.paint);
-        	
+    		drawRoutine(canvas);
     	}
     	else {
     		this.translate(flyX, flyY);
     		flyY += 1;
     		current.y += flyY;
     		current.x += flyX;
-    		canvas.drawPath(this.getTransformedPath(), this.paint);
+    		drawRoutine(canvas);
     		
     	}
     	
@@ -175,15 +184,26 @@ public class Fruit {
     		canvas.drawPath(testShape.getBoundaryPath(), paint);
     	}
     }
+    void drawRoutine(Canvas canvas) {
+    	Paint tempPaint = new Paint(this.paint);
+    	
+    	this.paint.setStyle(Style.STROKE);
+    	this.paint.setColor(Color.BLACK);
+    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	this.paint.setStyle(Style.FILL);
+    	this.paint.setColor(tempPaint.getColor());
+    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    }
     
     void performGravity() {
     	if(direction == 1) {
     		
-    		current.x = current.x + (max_x - x_location)*multiplier_x;
         	current.y = current.y - current.y*multiplier_y;
         	
+			current.x = current.x + (max_x - x_location)*multiplier_x;
         	translate((max_x - x_location)*multiplier_x, - current.y*multiplier_y);
         	x_location += (max_x - x_location)*multiplier_x;
+        	
     		 
     		/*
         	current.y -= 1;
@@ -193,11 +213,12 @@ public class Fruit {
     	else {
     		
     		float adder = Math.abs((x_location - max_x )*multiplier_x);
-    		current.x = current.x + adder;
+
         	current.y = current.y + current.y*multiplier_y;
-        	
+    		current.x = current.x + adder;
         	translate(adder, current.y*multiplier_y);
         	x_location += adder;
+        	
         	
     		/*
         	current.y += 1;
@@ -268,7 +289,7 @@ public class Fruit {
      * Returns two new Fruits, split by the line represented by the
      * two points given.
      */
-    public Fruit[] split(PointF p1, PointF p2) {
+    public Fruit[] oldsplit(PointF p1, PointF p2) {
     	Path topPath = null;
     	Path bottomPath = null;
     	Region topRegion = new Region();
@@ -351,7 +372,7 @@ public class Fruit {
 		return fruits ;
     	
     }
-    public Fruit[] newsplit(PointF p1, PointF p2) {
+    public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = new Path();
     	Path bottomPath = new Path();
     	Region topRegion = new Region();
@@ -406,14 +427,11 @@ public class Fruit {
         topPath.transform(at);
         bottomPath.transform(at);
         
-        
 		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
 		
         if (topPath != null && bottomPath != null) {
         	fruits = new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
         }
-		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
-
 		Matrix newMatrix = new Matrix();
 		newMatrix.postTranslate(current.x, current.y);
 		
@@ -422,20 +440,13 @@ public class Fruit {
 		fruits[0].direction = -1;
 		fruits[0].multiplier_y = (float)0.08;
 		fruits[0].multiplier_x = 0;
-		//fruits[0].transform = transform;
-		//fruits[0].x_location = 0;
 		fruits[0].x_location = this.x_location;
 		fruits[0].paint = this.paint;
 		fruits[0].splitPath = this.splitPath;
-    	//fruits[0].translate(-10, 0);
-		//fruits[0].translate(-p1.x, -p1.y);
-		//fruits[0].translate(-this.current.x, -this.current.y);
-		//fruits[0].translate(0, -this.current.y);
 		fruits[0].transform = new Matrix();
 		fruits[0].transform = new Matrix(newMatrix);
 		fruits[0].flyX = (float)-0.5;
 		fruits[0].flyY = (float)-1;
-		//fruits[0].transform.setValues(Graphics2D.getTranslateValues(this.transform));
 		
 		fruits[1].sliced = true;
 		fruits[1].current = this.current;
@@ -443,20 +454,13 @@ public class Fruit {
 		fruits[1].direction = -1;
 		fruits[1].multiplier_y = (float)0.08;
 		fruits[1].multiplier_x = 0;
-		//fruits[1].transform = transform;
-		//fruits[1].x_location = 0;
 		fruits[1].x_location = this.x_location;
 		fruits[1].paint = this.paint;
 		fruits[1].splitPath = this.splitPath;
-		//fruits[1].translate(-p1.x, -p1.y);
-    	//fruits[0].translate(+10, 0);
-		//fruits[1].translate(-this.current.x, -this.current.y);
-		//fruits[1].translate(0, -this.current.y);
 		fruits[1].transform = new Matrix();
 		fruits[1].transform = new Matrix(newMatrix);
 		fruits[1].flyX = (float)0.5;
-		fruits[0].flyY = (float)-1;
-		//fruits[1].transform.setValues(Graphics2D.getTranslateValues(this.transform));
+		fruits[1].flyY = (float)-1;
 		
 		return fruits ;
     	
@@ -471,7 +475,7 @@ public class Fruit {
     }
     
     private int getRandomColor() {
-    	return Color.argb(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)); 
+    	return Color.argb(255, rand.nextInt(150), rand.nextInt(256), rand.nextInt(50)); 
     }
     
     private float getRandomFloat(float maxX, float minX) {

@@ -7,15 +7,6 @@
     tools:ignore="MergeRootFrame" 
     android:background="@drawable/background1">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Welcome to Fruit Ninja! "
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <Button
         android:id="@+id/btnExit"
         style="?android:attr/buttonStyleSmall"
@@ -28,6 +19,24 @@
         android:onClick="endApplication"
         android:text="Exit" />
 
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:text="Welcome to Fruit Ninja! "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
     <Button
         android:id="@+id/btnNewGame"
         style="?android:attr/buttonStyleSmall"
@@ -35,8 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView1"
-        android:layout_marginLeft="45dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginLeft="29dp"
+        android:layout_marginTop="22dp"
         android:onClick="startNewGame"
         android:text="New Game" />
     
