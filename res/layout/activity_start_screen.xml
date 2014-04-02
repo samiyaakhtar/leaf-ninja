@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.a4complete.StartScreen"
-    tools:ignore="MergeRootFrame" >
+    tools:ignore="MergeRootFrame" 
+    android:background="@drawable/background1">
 
     <TextView
         android:id="@+id/textView1"
@@ -12,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Welcome to Bubble Ninja! "
+        android:text="Welcome to Fruit Ninja! "
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button

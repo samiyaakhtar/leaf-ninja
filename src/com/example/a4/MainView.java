@@ -48,7 +48,7 @@ public class MainView extends View implements Observer {
 
         startTimers();
 		model.startGame();
-		
+		/*
 		Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f1.translate(100, -100);
         model.add(f1);
@@ -64,7 +64,7 @@ public class MainView extends View implements Observer {
         Fruit f4 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f4.translate(150, -150);
         model.add(f4);
-        
+        */
         // TODO END CS349
 
         // add controller

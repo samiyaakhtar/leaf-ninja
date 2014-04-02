@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Bubble Ninja</string>
-    <string name="app_title">Android Bubble Ninja!</string>
-    <string name="title_activity_start_screen">StartScreen</string>
+    <string name="app_name">Fruit Ninja!</string>
+    <string name="app_title">Android Fruit Ninja!</string>
+    <string name="title_activity_start_screen">Fruit Ninja!</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

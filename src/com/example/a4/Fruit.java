@@ -27,7 +27,8 @@ public class Fruit {
     public Path splitPath;
     private Region testShape;
     
-    private int flyX = 0;
+    private float flyX = 0;
+    private float flyY = 0;
     
 	Random rand = new Random(System.currentTimeMillis());
 
@@ -146,9 +147,9 @@ public class Fruit {
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
     	}
+    	Log.d("Fruit", "Display size = " + MainActivity.displaySize.y  + ", current.y = " + current.y);
     	
-    	
-    	if(direction == -1 && current.y > MainActivity.displaySize.y + 100) {
+    	if(direction == -1 && current.y > MainActivity.displaySize.y ) {
     		isActive = false;
     	}
     	
@@ -158,7 +159,10 @@ public class Fruit {
         	
     	}
     	else {
-    		this.translate(0, 2);
+    		this.translate(flyX, flyY);
+    		flyY += 1;
+    		current.y += flyY;
+    		current.x += flyX;
     		canvas.drawPath(this.getTransformedPath(), this.paint);
     		
     	}
@@ -429,6 +433,8 @@ public class Fruit {
 		//fruits[0].translate(0, -this.current.y);
 		fruits[0].transform = new Matrix();
 		fruits[0].transform = new Matrix(newMatrix);
+		fruits[0].flyX = (float)-0.5;
+		fruits[0].flyY = (float)-1;
 		//fruits[0].transform.setValues(Graphics2D.getTranslateValues(this.transform));
 		
 		fruits[1].sliced = true;
@@ -448,10 +454,10 @@ public class Fruit {
 		//fruits[1].translate(0, -this.current.y);
 		fruits[1].transform = new Matrix();
 		fruits[1].transform = new Matrix(newMatrix);
+		fruits[1].flyX = (float)0.5;
+		fruits[0].flyY = (float)-1;
 		//fruits[1].transform.setValues(Graphics2D.getTranslateValues(this.transform));
 		
-		Log.d("split", "Current = " + this.current.toString());
-		Graphics2D.printMatrix(newMatrix);
 		return fruits ;
     	
     }
