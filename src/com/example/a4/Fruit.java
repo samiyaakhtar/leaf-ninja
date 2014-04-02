@@ -43,7 +43,6 @@ public class Fruit {
     private Region clipRegion;
     
     private float x_location; //Used for now
-    private float x_start;
 
     /**
      * A fruit is represented as Path, typically populated 
@@ -88,7 +87,6 @@ public class Fruit {
         
         this.translate(current.x, current.y);
         this.x_location = current.x;
-        this.x_start = current.x;
         this.clipRegion = new Region(0, 0, MainActivity.displaySize.x, MainActivity.displaySize.y);
         // Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
     }
@@ -148,13 +146,22 @@ public class Fruit {
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
     	}
-    	performGravity();
     	
-    	if(direction == -1 && current.y > MainActivity.displaySize.y + 50) {
+    	
+    	if(direction == -1 && current.y > MainActivity.displaySize.y + 100) {
     		isActive = false;
     	}
     	
-    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	if(!this.isSliced()) {
+    		performGravity();
+        	canvas.drawPath(this.getTransformedPath(), this.paint);
+        	
+    	}
+    	else {
+    		this.translate(0, 2);
+    		canvas.drawPath(this.getTransformedPath(), this.paint);
+    		
+    	}
     	
     	if(splitPath != null) {
 
@@ -167,18 +174,31 @@ public class Fruit {
     
     void performGravity() {
     	if(direction == 1) {
+    		
     		current.x = current.x + (max_x - x_location)*multiplier_x;
         	current.y = current.y - current.y*multiplier_y;
+        	
         	translate((max_x - x_location)*multiplier_x, - current.y*multiplier_y);
         	x_location += (max_x - x_location)*multiplier_x;
+    		 
+    		/*
+        	current.y -= 1;
+        	translate(0, -1);
+        	*/
     	}
     	else {
+    		
     		float adder = Math.abs((x_location - max_x )*multiplier_x);
     		current.x = current.x + adder;
         	current.y = current.y + current.y*multiplier_y;
+        	
         	translate(adder, current.y*multiplier_y);
         	x_location += adder;
         	
+    		/*
+        	current.y += 1;
+        	translate(0, 1);
+        	*/
     	}
     	
     }
@@ -258,13 +278,14 @@ public class Fruit {
         this.isActive = false;
         this.sliced = true;
         
-        double angle = Angle(p1, p2); 
+        double angle = Graphics2D.findAngle(p1, p2); 
         Matrix at = new Matrix();
 
         //at.postTranslate(p1.x, p1.y);
-        at.postTranslate(-p1.x,  -p1.y);
-        at.postRotate((float)(-angle* 180/Math.PI ));
-        
+
+        // at.postTranslate(-p1.x,  -p1.y);
+        at.postRotate((float)(angle), -p1.x,  -p1.y);
+        //at.postTranslate(p1.x, p1.y);
         
         Region myCurrentShape = new Region();
         Path tempPath = this.getTransformedPath();
@@ -278,12 +299,6 @@ public class Fruit {
         topRegion = new Region(myCurrentShape);
         bottomRegion = new Region(myCurrentShape);
 
-        //testShape = rect2;
-        
-       	/*
-       	 * Intersection of the two big rectangles with the fruit shape to
-       	 * calculate the top and bottom half
-       	 */
         topRegion.op(topRegion, rect1, Region.Op.INTERSECT);
         bottomRegion.op(bottomRegion, rect2, Region.Op.INTERSECT);
 
@@ -293,14 +308,10 @@ public class Fruit {
         bottomPath = bottomRegion.getBoundaryPath();
         topPath.transform(at);
         bottomPath.transform(at);
+
+        Graphics2D.printMatrix(this.transform);
+        Graphics2D.printMatrix(at);
         
-        
-    	// TODO BEGIN CS349
-        // calculate angle between points
-        // rotate and flatten points passed in
-        // rotate region
-        // define region masks and use to split region into top and bottom
-        // TODO END CS349
 
 		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
 		
@@ -314,9 +325,8 @@ public class Fruit {
 		fruits[0].direction = -1;
 		fruits[0].multiplier_y = (float)0.01;
 		fruits[0].multiplier_x = 0;
-		fruits[0].transform = this.transform;
+		fruits[0].transform = transform;
 		fruits[0].x_location = this.x_location;
-		fruits[0].x_start = this.x_start;
 		fruits[0].paint = this.paint;
 		fruits[0].splitPath = this.splitPath;
     	//fruits[0].translate(-10, 0);
@@ -330,11 +340,118 @@ public class Fruit {
 		fruits[1].multiplier_x = 0;
 		fruits[1].transform = transform;
 		fruits[1].x_location = this.x_location;
-		fruits[1].x_start = this.x_start;
 		fruits[1].paint = this.paint;
 		fruits[1].splitPath = this.splitPath;
     	//fruits[0].translate(+10, 0);
 		
+		return fruits ;
+    	
+    }
+    public Fruit[] newsplit(PointF p1, PointF p2) {
+    	Path topPath = new Path();
+    	Path bottomPath = new Path();
+    	Region topRegion = new Region();
+    	Region bottomRegion = new Region();
+    	
+    	
+    	if(!this.isSliced()) {
+    		//this.setFillColor(Color.BLACK);
+        	return new Fruit[0];
+        }
+    	
+        this.isActive = false;
+        this.sliced = true;
+        
+        if(p1.x < p2.x) {
+	        topPath.moveTo(p1.x,  p1.y - 10);
+	        topPath.lineTo(p2.x,  p2.y - 10);
+	        topPath.lineTo(p2.x + 1000,  p2.y - 1000);
+	        topPath.lineTo(p1.x - 1000,  p1.y - 1000);
+	
+	        bottomPath.moveTo(p1.x,  p1.y + 10);
+	        bottomPath.lineTo(p2.x,  p2.y + 10);
+	        bottomPath.lineTo(p2.x + 1000,  p2.y + 1000);
+	        bottomPath.lineTo(p1.x - 1000,  p1.y + 1000);
+        }
+        else {
+        	topPath.moveTo(p2.x,  p2.y - 10);
+	        topPath.lineTo(p1.x,  p1.y - 10);
+	        topPath.lineTo(p1.x + 1000,  p1.y - 1000);
+	        topPath.lineTo(p2.x - 1000,  p2.y - 1000);
+	
+	        bottomPath.moveTo(p2.x,  p2.y + 10);
+	        bottomPath.lineTo(p1.x,  p1.y + 10);
+	        bottomPath.lineTo(p1.x + 1000,  p1.y + 1000);
+	        bottomPath.lineTo(p2.x - 1000,  p2.y + 1000);
+        }
+        topRegion.setPath(topPath,  this.clipRegion);
+        bottomRegion.setPath(bottomPath,  this.clipRegion);
+        
+        
+        Region myregion = new Region();
+        myregion.setPath(this.getTransformedPath(),  this.clipRegion);
+        
+        topRegion.op(topRegion, myregion, Region.Op.INTERSECT);
+        bottomRegion.op(bottomRegion, myregion, Region.Op.INTERSECT);
+        
+        topPath = topRegion.getBoundaryPath();
+        bottomPath = bottomRegion.getBoundaryPath();
+        
+        Matrix at = new Matrix(this.transform);
+        at.invert(at);
+        topPath.transform(at);
+        bottomPath.transform(at);
+        
+        
+		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
+		
+        if (topPath != null && bottomPath != null) {
+        	fruits = new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
+        }
+		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
+
+		Matrix newMatrix = new Matrix();
+		newMatrix.postTranslate(current.x, current.y);
+		
+		fruits[0].sliced = true;
+		fruits[0].current = this.current;
+		fruits[0].direction = -1;
+		fruits[0].multiplier_y = (float)0.08;
+		fruits[0].multiplier_x = 0;
+		//fruits[0].transform = transform;
+		//fruits[0].x_location = 0;
+		fruits[0].x_location = this.x_location;
+		fruits[0].paint = this.paint;
+		fruits[0].splitPath = this.splitPath;
+    	//fruits[0].translate(-10, 0);
+		//fruits[0].translate(-p1.x, -p1.y);
+		//fruits[0].translate(-this.current.x, -this.current.y);
+		//fruits[0].translate(0, -this.current.y);
+		fruits[0].transform = new Matrix();
+		fruits[0].transform = new Matrix(newMatrix);
+		//fruits[0].transform.setValues(Graphics2D.getTranslateValues(this.transform));
+		
+		fruits[1].sliced = true;
+		fruits[1].current = this.current;
+		fruits[1].current.x = this.current.x;
+		fruits[1].direction = -1;
+		fruits[1].multiplier_y = (float)0.08;
+		fruits[1].multiplier_x = 0;
+		//fruits[1].transform = transform;
+		//fruits[1].x_location = 0;
+		fruits[1].x_location = this.x_location;
+		fruits[1].paint = this.paint;
+		fruits[1].splitPath = this.splitPath;
+		//fruits[1].translate(-p1.x, -p1.y);
+    	//fruits[0].translate(+10, 0);
+		//fruits[1].translate(-this.current.x, -this.current.y);
+		//fruits[1].translate(0, -this.current.y);
+		fruits[1].transform = new Matrix();
+		fruits[1].transform = new Matrix(newMatrix);
+		//fruits[1].transform.setValues(Graphics2D.getTranslateValues(this.transform));
+		
+		Log.d("split", "Current = " + this.current.toString());
+		Graphics2D.printMatrix(newMatrix);
 		return fruits ;
     	
     }

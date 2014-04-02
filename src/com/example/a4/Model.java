@@ -161,7 +161,7 @@ public class NewModel {
 		  dropped++;
 
 		  if(dropped >= 6) {
-			  EndGame();
+			  //EndGame();
 		  }
 	  }
 	  public int getNumLivesRemaining() {

@@ -48,7 +48,7 @@ public class MainView extends View implements Observer {
 
         startTimers();
 		model.startGame();
-		/*
+		
 		Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f1.translate(100, -100);
         model.add(f1);
@@ -56,7 +56,15 @@ public class MainView extends View implements Observer {
         Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
         f2.translate(200, -200);
         model.add(f2);
-        */
+
+        Fruit f3 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+        f3.translate(50, -50);
+        model.add(f3);
+
+        Fruit f4 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
+        f4.translate(150, -150);
+        model.add(f4);
+        
         // TODO END CS349
 
         // add controller
@@ -86,7 +94,7 @@ public class MainView extends View implements Observer {
                                 
                             	
                                 try {
-                                    Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
+                                    Fruit[] newFruits = s.newsplit(drag.getStart(), drag.getEnd());
 
                                     // TODO BEGIN CS349
                                     // you may want to place the fruit more carefully than this
