@@ -42,7 +42,7 @@ public class TitleView extends TextView implements Observer {
         // TODO END CS349
         setBackgroundColor(Color.argb(255, 56, 48, 45));
         setTextSize(15);
-        setText("Fruits played: " + model.getTotalShapesPlayed());
+        setText("Leaves played: " + model.getTotalShapesPlayed());
     }
 
     // Update from model

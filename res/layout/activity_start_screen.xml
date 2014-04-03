@@ -7,18 +7,6 @@
     tools:ignore="MergeRootFrame" 
     android:background="@drawable/background1">
 
-    <Button
-        android:id="@+id/btnExit"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnNewGame"
-        android:layout_alignBottom="@+id/btnNewGame"
-        android:layout_marginLeft="26dp"
-        android:layout_toRightOf="@+id/btnNewGame"
-        android:onClick="endApplication"
-        android:text="Exit" />
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
@@ -34,19 +22,36 @@
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="19dp"
-        android:text="Welcome to Fruit Ninja! "
+        android:text="Welcome to Leaf Ninja! "
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/logo2" />
 
     <Button
         android:id="@+id/btnNewGame"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginLeft="29dp"
-        android:layout_marginTop="22dp"
+        android:layout_above="@+id/btnExit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
         android:onClick="startNewGame"
-        android:text="New Game" />
+        android:text="Start" />
+
+    <Button
+        android:id="@+id/btnExit"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/imageView2"
+        android:layout_centerHorizontal="true"
+        android:onClick="endApplication"
+        android:text="Exit" />
     
 </RelativeLayout>

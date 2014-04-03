@@ -81,14 +81,14 @@ public class Fruit {
         this.paint.setStrokeWidth(5);
         this.x_direction = this.getRandomNumber(2,  0);
         //if(x_direction == 0) {
-            this.current = new PointF(getRandomNumber(200, 20), 500);
+            this.current = new PointF(getRandomNumber(300, 20), 500);
         //}
         //else {
         //    this.current = new PointF(getRandomNumber(400, 150), 500);
         //}
         this.direction = 1;
         this.max_y = getRandomNumber(120, 60);
-        this.max_x = getRandomNumber(200, 100);
+        this.max_x = getRandomNumber(400, 20);
         this.isActive = true;
         this.sliced = false;
         this.flyPath = new Path();
@@ -165,34 +165,35 @@ public class Fruit {
     	
     	if(!this.isSliced()) {
     		performGravity();
-    		drawRoutine(canvas);
+    		drawRoutine(canvas, this.getTransformedPath());
     	}
     	else {
     		this.translate(flyX, flyY);
     		flyY += 1;
     		current.y += flyY;
     		current.x += flyX;
-    		drawRoutine(canvas);
+    		drawRoutine(canvas, this.getTransformedPath());
     		
     	}
     	
     	if(splitPath != null) {
 
         	canvas.drawPath((splitPath), this.paint);
+    		//drawRoutine(canvas, splitPath);
     	}
     	if(testShape != null) {
     		canvas.drawPath(testShape.getBoundaryPath(), paint);
     	}
     }
-    void drawRoutine(Canvas canvas) {
+    void drawRoutine(Canvas canvas, Path pathToBeDrawn) {
     	Paint tempPaint = new Paint(this.paint);
     	
     	this.paint.setStyle(Style.STROKE);
     	this.paint.setColor(Color.BLACK);
-    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	canvas.drawPath(pathToBeDrawn, this.paint);
     	this.paint.setStyle(Style.FILL);
     	this.paint.setColor(tempPaint.getColor());
-    	canvas.drawPath(this.getTransformedPath(), this.paint);
+    	canvas.drawPath(pathToBeDrawn, this.paint);
     }
     
     void performGravity() {
@@ -204,11 +205,6 @@ public class Fruit {
         	translate((max_x - x_location)*multiplier_x, - current.y*multiplier_y);
         	x_location += (max_x - x_location)*multiplier_x;
         	
-    		 
-    		/*
-        	current.y -= 1;
-        	translate(0, -1);
-        	*/
     	}
     	else {
     		
@@ -216,14 +212,9 @@ public class Fruit {
 
         	current.y = current.y + current.y*multiplier_y;
     		current.x = current.x + adder;
-        	translate(adder, current.y*multiplier_y);
+        	translate(0, current.y*multiplier_y);
         	x_location += adder;
         	
-        	
-    		/*
-        	current.y += 1;
-        	translate(0, 1);
-        	*/
     	}
     	
     }

@@ -44,7 +44,7 @@ public class ScoreView extends TextView implements Observer {
         // TODO END CS349
         setBackgroundColor(Color.argb(255, 56, 48, 45));
         setTextSize(15);
-        setText("Scored: " + model.getSlashed() + "\t\t\t Dropped: " + model.getDropped() + "\t\t\t Lives: " + model.getNumLivesRemaining());
+        setText("Score: " + model.getSlashed() + "\t\t\t Dropped: " + model.getDropped() + "\t\t\t Lives: " + model.getNumLivesRemaining());
     }
 
     // Update from model

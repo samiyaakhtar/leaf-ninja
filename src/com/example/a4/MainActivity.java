@@ -20,12 +20,10 @@ public class MainActivity extends Activity {
     private ScoreView scoreView;
     public static Point displaySize;
 
-    
-   
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getWindow().setTitle("Android Fruit Ninja!");
+        this.getWindow().setTitle("Android Leaf Ninja!");
 
         // save display size
         Display display = getWindowManager().getDefaultDisplay();
