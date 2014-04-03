@@ -60,6 +60,8 @@ public class Fruit {
         for (int i = 4; i < points.length; i += 2) {
             //this.path.lineTo(points[i], points[i + 1]);
         	this.path.cubicTo(points[0], points[1], points[2], points[3], points[i], points[i + 1]);
+        	//this.path.cubicTo(points[i-4], points[i-3], points[i-2], points[i-1], points[i], points[i + 1]);
+        	//this.path.quadTo(points[0], points[1], points[i], points[i + 1]);
         }
         this.path.moveTo(points[0], points[1]);
         //this.path.computeBounds(this.fruitBounds, true);
@@ -169,7 +171,7 @@ public class Fruit {
     	}
     	else {
     		this.translate(flyX, flyY);
-    		flyY += 1;
+    		flyY += 1.5;
     		current.y += flyY;
     		current.x += flyX;
     		drawRoutine(canvas, this.getTransformedPath());
@@ -363,6 +365,22 @@ public class Fruit {
 		return fruits ;
     	
     }
+    public Path[] returnPathForLine(PointF p1, PointF p2) {
+    	Path path1 = new Path();
+    	Path path2 = new Path();
+    	
+    	path1.moveTo(p1.x,  p1.y - 1);
+    	path1.lineTo(p2.x,  p2.y - 1);
+    	path1.lineTo(p2.x + 1000,  p2.y - 1000);
+    	path1.lineTo(p1.x - 1000,  p1.y - 1000);
+
+    	path2.moveTo(p1.x,  p1.y + 1);
+    	path2.lineTo(p2.x,  p2.y + 1);
+    	path2.lineTo(p2.x + 1000,  p2.y + 1000);
+    	path2.lineTo(p1.x - 1000,  p1.y + 1000);
+    	
+    	return new Path[] {path1, path2};
+    }
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = new Path();
     	Path bottomPath = new Path();
@@ -371,34 +389,19 @@ public class Fruit {
     	
     	
     	if(!this.isSliced()) {
-    		//this.setFillColor(Color.BLACK);
         	return new Fruit[0];
         }
     	
-        this.isActive = false;
-        this.sliced = true;
         
         if(p1.x < p2.x) {
-	        topPath.moveTo(p1.x,  p1.y - 10);
-	        topPath.lineTo(p2.x,  p2.y - 10);
-	        topPath.lineTo(p2.x + 1000,  p2.y - 1000);
-	        topPath.lineTo(p1.x - 1000,  p1.y - 1000);
-	
-	        bottomPath.moveTo(p1.x,  p1.y + 10);
-	        bottomPath.lineTo(p2.x,  p2.y + 10);
-	        bottomPath.lineTo(p2.x + 1000,  p2.y + 1000);
-	        bottomPath.lineTo(p1.x - 1000,  p1.y + 1000);
+	        Path[] paths = returnPathForLine(p1, p2);
+	        topPath = paths[0];
+	        bottomPath = paths[1];
         }
         else {
-        	topPath.moveTo(p2.x,  p2.y - 10);
-	        topPath.lineTo(p1.x,  p1.y - 10);
-	        topPath.lineTo(p1.x + 1000,  p1.y - 1000);
-	        topPath.lineTo(p2.x - 1000,  p2.y - 1000);
-	
-	        bottomPath.moveTo(p2.x,  p2.y + 10);
-	        bottomPath.lineTo(p1.x,  p1.y + 10);
-	        bottomPath.lineTo(p1.x + 1000,  p1.y + 1000);
-	        bottomPath.lineTo(p2.x - 1000,  p2.y + 1000);
+        	Path[] paths = returnPathForLine(p2, p1);
+	        topPath = paths[0];
+	        bottomPath = paths[1];
         }
         topRegion.setPath(topPath,  this.clipRegion);
         bottomRegion.setPath(bottomPath,  this.clipRegion);
@@ -417,6 +420,9 @@ public class Fruit {
         at.invert(at);
         topPath.transform(at);
         bottomPath.transform(at);
+
+        this.isActive = false;
+        this.sliced = true;
         
 		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
 		
@@ -437,7 +443,7 @@ public class Fruit {
 		fruits[0].transform = new Matrix();
 		fruits[0].transform = new Matrix(newMatrix);
 		fruits[0].flyX = (float)-0.5;
-		fruits[0].flyY = (float)-1;
+		fruits[0].flyY = (float)0;
 		
 		fruits[1].sliced = true;
 		fruits[1].current = this.current;
@@ -451,7 +457,7 @@ public class Fruit {
 		fruits[1].transform = new Matrix();
 		fruits[1].transform = new Matrix(newMatrix);
 		fruits[1].flyX = (float)0.5;
-		fruits[1].flyY = (float)-1;
+		fruits[1].flyY = (float)0;
 		
 		return fruits ;
     	

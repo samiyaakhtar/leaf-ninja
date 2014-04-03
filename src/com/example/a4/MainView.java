@@ -142,7 +142,8 @@ public class MainView extends View implements Observer {
     	}
     }
     void startTimers() {
-    	
+    	// For actual game, keep timer speed 25 and 700
+    	// For AVD, keep timer speed 40 and 1500
     	gameTimer.schedule(new TimerTask() { 
     		public void run() {
     			main_activity.runOnUiThread(new Runnable() {
@@ -151,7 +152,7 @@ public class MainView extends View implements Observer {
     					drawGame();
     				}});
     		}
-    	}, 0, 25);
+    	}, 0, 40);
     	gameRunning = true;
     	
     	
@@ -164,15 +165,27 @@ public class MainView extends View implements Observer {
     				@Override
     				public void run() {
     					//Fruit f1 = new Fruit(new float[] {0, 40, 40, 0, 80, 0, 120, 40, 120, 80, 80, 120, 40, 120, 0, 80});
-    					int leafSize = model.getRandomNumber(45,  20);
-    					Fruit f1 = new Fruit(new float[] {0, leafSize, 
+    					int leafSize = model.getRandomNumber(40,  20);
+    					/* Fruit f1 = new Fruit(new float[] {0, leafSize, 
     													  leafSize, 0, 
     													  2*leafSize, 0, 
     													  3*leafSize, leafSize, 
     													  3*leafSize, 2*leafSize, 
     													  2*leafSize, 3*leafSize, 
     													  leafSize, 3*leafSize, 
-    													  0, 2*leafSize});
+    													  0, 2*leafSize}); */
+    					
+    					Fruit f1 = new Fruit(new float[] {
+    							  0, leafSize, 
+								  leafSize, 0, 
+								  2*leafSize, 0, 
+								  3*leafSize, leafSize, 
+								  3*leafSize, 2*leafSize, 
+								  3*leafSize, 3*leafSize, 
+								  2*leafSize, 3*leafSize, 
+								  leafSize, 3*leafSize, 
+								  0, 2*leafSize,
+								  0, leafSize});
     					/*
     					Fruit f1 = new Fruit(new float[] {0, 40, 
 								  40, 0, 
@@ -183,17 +196,12 @@ public class MainView extends View implements Observer {
 								  40, 120, 
 								  0, 80});
     					*/
-    					//Fruit f1 = new Fruit(new float[] {0, 30, 30, 0, 60, 0, 90, 30, 90, 60, 60, 90, 30, 90, 0, 60});
-    	   			   //Fruit f1 = new Fruit(new RectF(0, 0, model.getRandomNumber(100, 50), model.getRandomNumber(100, 50)));
-    	   			   //Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-    			       //f1.translate(0, 500);
-    			       //f1.current.x = 0;
-    			       //f1.current.y = 500;
+    					
     			        model.add(f1);
     			        model.incrementTotal();
     				}});
     		}
-    	}, 0, 700); 
+    	}, 0, 1500); 
     	
     }
     

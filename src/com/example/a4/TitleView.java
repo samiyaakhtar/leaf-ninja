@@ -26,7 +26,7 @@ public class TitleView extends TextView implements Observer {
         super(context);
         model = m;
         // set width, height of this view
-        this.setHeight(150);
+        this.setHeight(120);
         this.setWidth(MainActivity.displaySize.x);
 
         // register with model so that we get updates
