@@ -83,7 +83,8 @@ public class Fruit {
         this.paint.setStrokeWidth(5);
         this.x_direction = this.getRandomNumber(2,  0);
         //if(x_direction == 0) {
-            this.current = new PointF(getRandomNumber(300, 20), 500);
+        //Log.d("Fruit", MainActivity.displaySize.y + "");
+            this.current = new PointF(getRandomNumber(300, 20), MainActivity.displaySize.y);
         //}
         //else {
         //    this.current = new PointF(getRandomNumber(400, 150), 500);
@@ -302,8 +303,8 @@ public class Fruit {
         //at.postTranslate(p1.x, p1.y);
 
         // at.postTranslate(-p1.x,  -p1.y);
-        at.postRotate((float)(angle), -p1.x,  -p1.y);
-        //at.postTranslate(p1.x, p1.y);
+        at.postRotate((float)(-angle));
+        at.postTranslate(p1.x, p1.y);
         
         Region myCurrentShape = new Region();
         Path tempPath = this.getTransformedPath();
@@ -394,6 +395,7 @@ public class Fruit {
     	
         
         if(p1.x < p2.x) {
+        	
 	        Path[] paths = returnPathForLine(p1, p2);
 	        topPath = paths[0];
 	        bottomPath = paths[1];
@@ -405,7 +407,6 @@ public class Fruit {
         }
         topRegion.setPath(topPath,  this.clipRegion);
         bottomRegion.setPath(bottomPath,  this.clipRegion);
-        
         
         Region myregion = new Region();
         myregion.setPath(this.getTransformedPath(),  this.clipRegion);

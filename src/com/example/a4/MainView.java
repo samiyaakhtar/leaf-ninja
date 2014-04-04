@@ -31,17 +31,20 @@ public class MainView extends View implements Observer {
     private final Model model;
     private final MouseDrag drag = new MouseDrag();
     private Activity main_activity;
+    private AlertDialog.Builder alertDialogBuilder;
 
     public Timer gameTimer = new Timer("gameTimer");
     public Timer fruitTimer = new Timer("fruitTimer") ;
     public boolean gameRunning = false;
+    public boolean dialogCreated = false;
     
     
     // Constructor
     MainView(Context context, Model m) {
         super(context);
         main_activity = (Activity) context;
-
+        alertDialogBuilder = new AlertDialog.Builder( main_activity);
+        
         // register this view with the model
         model = m;
         model.addObserver(this);
@@ -153,6 +156,7 @@ public class MainView extends View implements Observer {
     				}});
     		}
     	}, 0, 40);
+    	
     	gameRunning = true;
     	
     	
@@ -258,14 +262,16 @@ public class MainView extends View implements Observer {
             }
         }
         else {
-        	showEndGameDialog();
+        	if(! dialogCreated) {
+        		showEndGameDialog();
+        	}
+        	
         }
         
     }
 
     public void showEndGameDialog() {
-    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-    			main_activity);
+    	
  
     		String scoreCard = "";
     		scoreCard += "Scored: " + model.getSlashed() + "\n";
@@ -283,15 +289,24 @@ public class MainView extends View implements Observer {
 					public void onClick(DialogInterface dialog,int id) {
 						// if this button is clicked, close
 						// current activity
+
+						//dialog.dismiss();
+						//dialog.cancel()
+						//dialog.cancel();
+						dialog.dismiss();
+						dialogCreated = false;
 						main_activity.finish();
+						
 					}
 				  });
- 
+
+			dialogCreated = true;
+			alertDialogBuilder.show();
 				// create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
+				//AlertDialog alertDialog = alertDialogBuilder.create();
  
 				// show it
-				alertDialog.show();
+				//alertDialog.show();
     }
     @Override
     public void update(Observable observable, Object data) {
