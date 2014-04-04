@@ -4,16 +4,10 @@
  * Jeff Avery
  */
 package com.example.a4;
-import java.util.ArrayList;
 import java.util.Random;
-
-import com.example.a4complete.R;
 
 import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.util.Log;
-import android.view.ViewGroup;
-import android.view.Display;
 
 /**
  * Class that represents a Fruit. Can be split into two separate fruits.
@@ -34,7 +28,6 @@ public class Fruit {
 	Random rand = new Random(System.currentTimeMillis());
 
     private int direction;
-    private int x_direction;
     private int max_y;
     private int max_x;
     private float multiplier_x;
@@ -42,7 +35,6 @@ public class Fruit {
     public boolean isActive;
     public boolean sliced;
 
-    private Path flyPath;
     private Region clipRegion;
     
     private float x_location; //Used for now
@@ -60,11 +52,8 @@ public class Fruit {
         for (int i = 4; i < points.length; i += 2) {
             //this.path.lineTo(points[i], points[i + 1]);
         	this.path.cubicTo(points[0], points[1], points[2], points[3], points[i], points[i + 1]);
-        	//this.path.cubicTo(points[i-4], points[i-3], points[i-2], points[i-1], points[i], points[i + 1]);
-        	//this.path.quadTo(points[0], points[1], points[i], points[i + 1]);
         }
         this.path.moveTo(points[0], points[1]);
-        //this.path.computeBounds(this.fruitBounds, true);
     }
     Fruit(Region region) {
         init();
@@ -74,27 +63,19 @@ public class Fruit {
     Fruit(Path path) {
         init();
         this.path = path;
-        //this.path.computeBounds(this.fruitBounds, true);
     }
    
 
     private void init() {
         this.paint.setColor(getRandomColor());
         this.paint.setStrokeWidth(5);
-        this.x_direction = this.getRandomNumber(2,  0);
-        //if(x_direction == 0) {
-        //Log.d("Fruit", MainActivity.displaySize.y + "");
             this.current = new PointF(getRandomNumber(300, 20), MainActivity.displaySize.y);
-        //}
-        //else {
-        //    this.current = new PointF(getRandomNumber(400, 150), 500);
-        //}
+
         this.direction = 1;
         this.max_y = getRandomNumber(120, 60);
         this.max_x = getRandomNumber(400, 20);
         this.isActive = true;
         this.sliced = false;
-        this.flyPath = new Path();
                 
         this.multiplier_x = getRandomFloat((float)0.09, (float)0.05);
         this.multiplier_y = getRandomFloat((float)0.07, (float)0.05);
@@ -102,7 +83,6 @@ public class Fruit {
         this.translate(current.x, current.y);
         this.x_location = current.x;
         this.clipRegion = new Region(0, 0, MainActivity.displaySize.x, MainActivity.displaySize.y);
-        // Log.d("MainActivity", "max_x = " + max_x + ", max_y = " + max_y + ", multiplier_x = " + multiplier_x + ", multiplier_y = " + multiplier_y);
     }
     
 
@@ -160,7 +140,6 @@ public class Fruit {
     		direction = -1;
     		x_location = Math.abs(x_location - max_x) + max_x;
     	}
-    	//Log.d("Fruit", "Display size = " + MainActivity.displaySize.y  + ", current.y = " + current.y);
     	
     	if(direction == -1 && current.y > MainActivity.displaySize.y ) {
     		isActive = false;
@@ -182,11 +161,26 @@ public class Fruit {
     	if(splitPath != null) {
 
         	canvas.drawPath((splitPath), this.paint);
-    		//drawRoutine(canvas, splitPath);
     	}
     	if(testShape != null) {
     		canvas.drawPath(testShape.getBoundaryPath(), paint);
     	}
+    }
+    public Path[] returnPathForLine(PointF p1, PointF p2) {
+    	Path path1 = new Path();
+    	Path path2 = new Path();
+
+    	path2.moveTo(p1.x,  p1.y + 1);
+    	path2.lineTo(p2.x,  p2.y + 1);
+    	path2.lineTo(p2.x + 1000,  p2.y + 1000);
+    	path2.lineTo(p1.x - 1000,  p1.y + 1000);
+    	
+    	path1.moveTo(p1.x,  p1.y - 1);
+    	path1.lineTo(p2.x,  p2.y - 1);
+    	path1.lineTo(p2.x + 1000,  p2.y - 1000);
+    	path1.lineTo(p1.x - 1000,  p1.y - 1000);
+
+    	return new Path[] {path1, path2};
     }
     void drawRoutine(Canvas canvas, Path pathToBeDrawn) {
     	Paint tempPaint = new Paint(this.paint);
@@ -255,18 +249,6 @@ public class Fruit {
     	return false;
     } 
     
-    /*
-     * Calculates and returns the angle between the x axis and the line formed by 
-     * two points passed as parameter to this function
-     */
-    private double Angle(PointF p1, PointF p2)
-    {
-        double dx = p2.x - p1.x;
-        double dy = p2.y - p1.y;
-        double angle = Math.atan2(dy, dx); 
-        
-        return angle;
-    }
     
     /**
      * Returns whether the given point is within the Fruit's shape.
@@ -277,111 +259,7 @@ public class Fruit {
         return valid && region.contains((int) p1.x, (int) p1.y);
     }
 
-    /**
-     * This method assumes that the line represented by the two points
-     * intersects the fruit. If not, unpredictable results will occur.
-     * Returns two new Fruits, split by the line represented by the
-     * two points given.
-     */
-    public Fruit[] oldsplit(PointF p1, PointF p2) {
-    	Path topPath = null;
-    	Path bottomPath = null;
-    	Region topRegion = new Region();
-    	Region bottomRegion = new Region();
-    	
-    	if(!this.isSliced()) {
-    		//this.setFillColor(Color.BLACK);
-        	return new Fruit[0];
-        }
-    	
-        this.isActive = false;
-        this.sliced = true;
-        
-        double angle = Graphics2D.findAngle(p1, p2); 
-        Matrix at = new Matrix();
-
-        //at.postTranslate(p1.x, p1.y);
-
-        // at.postTranslate(-p1.x,  -p1.y);
-        at.postRotate((float)(-angle));
-        at.postTranslate(p1.x, p1.y);
-        
-        Region myCurrentShape = new Region();
-        Path tempPath = this.getTransformedPath();
-        tempPath.transform(at);
-        myCurrentShape.setPath(tempPath, this.clipRegion);
-        
-        
-        Region rect1 = new Region(new Rect(0, -1000, 1000, 1000));
-        Region rect2 = new Region(new Rect(0, 0, 1000, 1000));
-        
-        topRegion = new Region(myCurrentShape);
-        bottomRegion = new Region(myCurrentShape);
-
-        topRegion.op(topRegion, rect1, Region.Op.INTERSECT);
-        bottomRegion.op(bottomRegion, rect2, Region.Op.INTERSECT);
-
-        at.invert(at);
-        
-       	topPath = topRegion.getBoundaryPath();
-        bottomPath = bottomRegion.getBoundaryPath();
-        topPath.transform(at);
-        bottomPath.transform(at);
-
-        Graphics2D.printMatrix(this.transform);
-        Graphics2D.printMatrix(at);
-        
-
-		Fruit[] fruits = new Fruit[] {new Fruit(this.path), new Fruit(this.path)};
-		
-        if (topPath != null && bottomPath != null) {
-        	fruits = new Fruit[] { new Fruit(topPath), new Fruit(bottomPath) };
-        }
-		// Fruit[] fruits = new Fruit[] {new Fruit(topPath), new Fruit(bottomPath)};
-		
-		fruits[0].sliced = true;
-		fruits[0].current = this.current;
-		fruits[0].direction = -1;
-		fruits[0].multiplier_y = (float)0.01;
-		fruits[0].multiplier_x = 0;
-		fruits[0].transform = transform;
-		fruits[0].x_location = this.x_location;
-		fruits[0].paint = this.paint;
-		fruits[0].splitPath = this.splitPath;
-    	//fruits[0].translate(-10, 0);
-
-		
-		fruits[1].sliced = true;
-		fruits[1].current = this.current;
-		fruits[1].current.x = this.current.x;
-		fruits[1].direction = -1;
-		fruits[1].multiplier_y = (float)0.01;
-		fruits[1].multiplier_x = 0;
-		fruits[1].transform = transform;
-		fruits[1].x_location = this.x_location;
-		fruits[1].paint = this.paint;
-		fruits[1].splitPath = this.splitPath;
-    	//fruits[0].translate(+10, 0);
-		
-		return fruits ;
-    	
-    }
-    public Path[] returnPathForLine(PointF p1, PointF p2) {
-    	Path path1 = new Path();
-    	Path path2 = new Path();
-    	
-    	path1.moveTo(p1.x,  p1.y - 1);
-    	path1.lineTo(p2.x,  p2.y - 1);
-    	path1.lineTo(p2.x + 1000,  p2.y - 1000);
-    	path1.lineTo(p1.x - 1000,  p1.y - 1000);
-
-    	path2.moveTo(p1.x,  p1.y + 1);
-    	path2.lineTo(p2.x,  p2.y + 1);
-    	path2.lineTo(p2.x + 1000,  p2.y + 1000);
-    	path2.lineTo(p1.x - 1000,  p1.y + 1000);
-    	
-    	return new Path[] {path1, path2};
-    }
+    
     public Fruit[] split(PointF p1, PointF p2) {
     	Path topPath = new Path();
     	Path bottomPath = new Path();

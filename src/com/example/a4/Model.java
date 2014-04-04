@@ -5,7 +5,6 @@
  */
 package com.example.a4;
 
-import android.util.Log;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -16,66 +15,7 @@ import java.util.Observer;
  * and notify them when the fruit list changes.
  */
 public class Model extends Observable {
-	/*
-    // List of fruit that we want to display
-    private ArrayList<Fruit> shapes = new ArrayList<Fruit>();
-
-    // Constructor
-    Model() {
-        shapes.clear();
-    }
-
-    // Model methods
-    // You may need to add more methods here, depending on required functionality.
-    // For instance, this sample makes to effort to discard fruit from the list.
-    public void add(Fruit s) {
-        shapes.add(s);
-        setChanged();
-        notifyObservers();
-    }
-
-    public void remove(Fruit s) {
-        shapes.remove(s);
-    }
-
-    public ArrayList<Fruit> getShapes() {
-        return (ArrayList<Fruit>) shapes.clone();
-    }
-    public ArrayList<Fruit> getActualShapes() {
-        return (ArrayList<Fruit>) shapes;
-    }
-
-    // MVC methods
-    // Basic MVC methods to bind view and model together.
-    public void addObserver(Observer observer) {
-        super.addObserver(observer);
-    }
-
-    // a helper to make it easier to initialize all observers
-    public void initObservers() {
-        setChanged();
-        notifyObservers();
-    }
-
-    @Override
-    public synchronized void deleteObserver(Observer observer) {
-        super.deleteObserver(observer);
-        setChanged();
-        notifyObservers();
-    }
-
-    @Override
-    public synchronized void deleteObservers() {
-        super.deleteObservers();
-        setChanged();
-        notifyObservers();
-    }
-}
-public class NewModel {
-*/
-	  // Observer list
-
-	  // Fruit that we want to display
+	
 	  private ArrayList<Fruit> shapes = new ArrayList();
 
 	  private int slashed = 0;

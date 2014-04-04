@@ -22,7 +22,7 @@
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="19dp"
-        android:text="Welcome to Leaf Ninja! "
+        android:text="@string/btnWelcome"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageView
@@ -42,7 +42,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="14dp"
         android:onClick="startNewGame"
-        android:text="Start" />
+        android:text="@string/btnStart" />
 
     <Button
         android:id="@+id/btnExit"
@@ -52,6 +52,6 @@
         android:layout_above="@+id/imageView2"
         android:layout_centerHorizontal="true"
         android:onClick="endApplication"
-        android:text="Exit" />
+        android:text="@string/btnExit" />
     
 </RelativeLayout>

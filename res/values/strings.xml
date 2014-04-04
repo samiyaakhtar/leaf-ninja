@@ -6,5 +6,8 @@
     <string name="title_activity_start_screen">Leaf Ninja!</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="btnExit">Exit</string>
+    <string name="btnStart">Start</string>
+    <string name="btnWelcome">Welcome to Leaf Ninja!</string>
 
 </resources>

@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.*;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,7 +20,6 @@ import java.util.Observer;
 import java.util.TimerTask;
 import java.util.Timer;
 
-import com.example.a4complete.StartScreen;
 
 /*
  * View of the main game area.
@@ -51,25 +49,7 @@ public class MainView extends View implements Observer {
 
         startTimers();
 		model.startGame();
-		/*
-		Fruit f1 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f1.translate(100, -100);
-        model.add(f1);
-
-        Fruit f2 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f2.translate(200, -200);
-        model.add(f2);
-
-        Fruit f3 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f3.translate(50, -50);
-        model.add(f3);
-
-        Fruit f4 = new Fruit(new float[] {0, 20, 20, 0, 40, 0, 60, 20, 60, 40, 40, 60, 20, 60, 0, 40});
-        f4.translate(150, -150);
-        model.add(f4);
-        */
-        // TODO END CS349
-
+		
         // add controller
         // capture touch movement, and determine if we intersect a shape
         setOnTouchListener(new OnTouchListener() {
@@ -77,12 +57,10 @@ public class MainView extends View implements Observer {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        // Log.d(getResources().getString(R.string.app_name), "Touch down");
                         drag.start(event.getX(), event.getY());
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        // Log.d(getResources().getString(R.string.app_name), "Touch release");
                         drag.stop(event.getX(), event.getY());
 
                         // find intersected shapes
@@ -90,43 +68,24 @@ public class MainView extends View implements Observer {
                         while(i.hasNext()) {
                             Fruit s = i.next();
                             if (s != null && s.isActive() && !s.isSliced() && s.intersects(drag.getStart(), drag.getEnd())) {
-                            	//s.setFillColor(Color.RED);
                             	model.incrementSlashed();
-                                //s.isActive = false;
-                                //s.sliced = true;
-                                
                             	
                                 try {
                                     Fruit[] newFruits = s.split(drag.getStart(), drag.getEnd());
 
-                                    // TODO BEGIN CS349
-                                    // you may want to place the fruit more carefully than this
                                     if(newFruits != null && newFruits.length == 2) {
-	                                    //newFruits[0].translate(0, -10);
-	                                    //newFruits[1].translate(0, +10);
-	                                    // TODO END CS349
 	                                    model.add(newFruits[0]);
 	                                    model.add(newFruits[1]);
-	                                    
-	                                    //newFruits[0].setFillColor(Color.YELLOW);
-	                                    //newFruits[1].setFillColor(Color.YELLOW);
-	                                    
                                     }
                                     else {
-                                    	Log.e("fruit_ninja", "Split returned nothing");
+                                    	//Log.e("fruit_ninja", "Split returned nothing");
                                     }
-                                    // TODO BEGIN CS349
-                                    // delete original fruit from model
-                                    // TODO END CS349
 
                                 } catch (Exception ex) {
-                                    Log.e("fruit_ninja", "Error: " + ex.getMessage());
-                                    s.setFillColor(Color.GRAY);
+                                    //Log.e("fruit_ninja", "Error: " + ex.getMessage());
                                 }
                                 
-                            } else {
-                                //s.setFillColor(Color.BLUE);
-                            }
+                            } 
                             invalidate();
                         }
                         break;
@@ -168,16 +127,7 @@ public class MainView extends View implements Observer {
     			main_activity.runOnUiThread(new Runnable() {
     				@Override
     				public void run() {
-    					//Fruit f1 = new Fruit(new float[] {0, 40, 40, 0, 80, 0, 120, 40, 120, 80, 80, 120, 40, 120, 0, 80});
     					int leafSize = model.getRandomNumber(40,  20);
-    					/* Fruit f1 = new Fruit(new float[] {0, leafSize, 
-    													  leafSize, 0, 
-    													  2*leafSize, 0, 
-    													  3*leafSize, leafSize, 
-    													  3*leafSize, 2*leafSize, 
-    													  2*leafSize, 3*leafSize, 
-    													  leafSize, 3*leafSize, 
-    													  0, 2*leafSize}); */
     					
     					Fruit f1 = new Fruit(new float[] {
     							  0, leafSize, 
@@ -190,16 +140,6 @@ public class MainView extends View implements Observer {
 								  leafSize, 3*leafSize, 
 								  0, 2*leafSize,
 								  0, leafSize});
-    					/*
-    					Fruit f1 = new Fruit(new float[] {0, 40, 
-								  40, 0, 
-								  80, 0, 
-								  120, 40, 
-								  120, 80, 
-								  80, 120, 
-								  40, 120, 
-								  0, 80});
-    					*/
     					
     			        model.add(f1);
     			        model.incrementTotal();
@@ -271,14 +211,10 @@ public class MainView extends View implements Observer {
     }
 
     public void showEndGameDialog() {
-    	
- 
     		String scoreCard = "";
     		scoreCard += "Scored: " + model.getSlashed() + "\n";
     		scoreCard += "Dropped: " + model.getDropped() + "\n";
-    		scoreCard += "Lives remaining: " + model.getNumLivesRemaining() + "\n";
-    		//scoreCard += "Click Ok to go to main menu!" + "\n";
-			// set title
+    		scoreCard += "Lives remaining: " + model.getNumLivesRemaining();
 			alertDialogBuilder.setTitle("Game Over!");
  
 			// set dialog message
@@ -287,12 +223,6 @@ public class MainView extends View implements Observer {
 				.setCancelable(false)
 				.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,int id) {
-						// if this button is clicked, close
-						// current activity
-
-						//dialog.dismiss();
-						//dialog.cancel()
-						//dialog.cancel();
 						dialog.dismiss();
 						dialogCreated = false;
 						main_activity.finish();
@@ -302,11 +232,6 @@ public class MainView extends View implements Observer {
 
 			dialogCreated = true;
 			alertDialogBuilder.show();
-				// create alert dialog
-				//AlertDialog alertDialog = alertDialogBuilder.create();
- 
-				// show it
-				//alertDialog.show();
     }
     @Override
     public void update(Observable observable, Object data) {
